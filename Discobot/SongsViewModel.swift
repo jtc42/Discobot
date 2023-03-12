@@ -24,22 +24,24 @@ struct AlbumCardView: View {
             AsyncImage(
                 url: album.artwork?.url(width: Int(artSize), height: Int(artSize)),
                 content: { image in
-                    image.resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: .infinity, alignment: .center)
+                    image.resizable().aspectRatio(contentMode: .fit)
                 },
                 placeholder: {
-                    ProgressView()
+                    Image(systemName: "a.square") // TODO: Replace with a better placeholder
+                        // Make placeholder resizable
+                        .resizable()
+                        // Force to a square, so cards with placeholders are roughly the right size
+                        .aspectRatio(1, contentMode: .fit)
                 }
-            ).frame(maxWidth: .infinity) // TODO: Frame so placeholder is correct full size
+            ).frame(maxWidth: .infinity)
             VStack(alignment: .leading, spacing: 8.0) {
                 Text(album.title).font(Font.system(.headline))
                 Text(album.artistName).font(.system(.subheadline))
             }.padding([.horizontal, .bottom], 8.0)
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .background(Color(UIColor.systemGroupedBackground))
-        .cornerRadius(8.0)
+        .cornerRadius(12.0)
     }
 }
 
