@@ -82,9 +82,9 @@ struct SongsViewModel: View {
                     ForEach(items) { reccommendation in
                         ForEach(reccommendation.albums) { album in
                             AlbumCardView(album: album)
-                                .scrollSnappingAnchor(.bounds)
                                 .padding(.bottom, 40.0)
-                                .frame(maxWidth: .infinity, minHeight: geometry.size.height * 0.92)
+                                .frame(maxWidth: .infinity, minHeight: geometry.size.height * 0.95)
+                                .scrollSnappingAnchor(.bounds)
                         }
                     }
                 }.padding([.horizontal], 20.0)
