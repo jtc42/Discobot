@@ -20,29 +20,55 @@ struct AlbumCardView: View {
     var album: Album
 
     var body: some View {
-        LazyVStack(alignment: .center) {
-            let artSize = 200.0 // geometry.size.width
-            AsyncImage(
-                url: album.artwork?.url(width: Int(artSize), height: Int(artSize)),
-                content: { image in
-                    image.resizable().aspectRatio(contentMode: .fit)
-                },
-                placeholder: {
-                    Image(systemName: "a.square") // TODO: Replace with a better placeholder
-                        // Make placeholder resizable
-                        .resizable()
-                        // Force to a square, so cards with placeholders are roughly the right size
-                        .aspectRatio(1, contentMode: .fit)
+        GeometryReader { geometry in
+            // Height of VStack is determined by it's children, and the height of the children
+            // are in turn determined by the available height set by the frame of this view (measured by GeometryReader)
+            LazyVStack(alignment: .leading) {
+                // Get art size from the parent geometry multiplied by display scale
+                let artSize = geometry.size.width * UIScreen().scale
+                AsyncImage(
+                    url: album.artwork?.url(width: Int(artSize), height: Int(artSize)),
+                    content: { image in
+                        image.resizable().aspectRatio(contentMode: .fit)
+                    },
+                    placeholder: {
+                        Image(systemName: "a.square") // TODO: Replace with a better placeholder
+                            // Make placeholder resizable
+                            .resizable()
+                            // Force to a square, so cards with placeholders are roughly the right size
+                            .aspectRatio(1, contentMode: .fit)
+                    }
+                ).frame(maxWidth: .infinity)
+
+                // Everything other than album art
+                VStack(alignment: .leading, spacing: 16.0) {
+                    // OPTIONAL: Initial spacer to push item info down
+                    Spacer()
+
+                    // Item info
+                    VStack(alignment: .leading, spacing: 8.0) {
+                        Text(album.title).font(Font.system(.headline))
+                        Text(album.artistName).font(.system(.subheadline))
+                    }.padding(.top, 8.0)
+
+                    // Push all remaining content to the bottom of the available space
+                    Spacer()
+
+                    // Item card - Full width and horizontally centered
+                    VStack(spacing: 16.0) {
+                        // Play button
+                        Text("PLAY").font(Font.system(.title3))
+                    }.frame(maxWidth: .infinity, alignment: .center)
                 }
-            ).frame(maxWidth: .infinity)
-            VStack(alignment: .center, spacing: 8.0) {
-                Text(album.title).font(Font.system(.headline))
-                Text(album.artistName).font(.system(.subheadline))
-            }.padding([.horizontal, .bottom], 8.0)
+                // Padding, for a e s t h e t i c
+                .padding([.horizontal, .bottom], 10.0)
+                // Lock height as the difference between the artwork height and the full available height
+                .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
+            }
+            .background(Color(UIColor.systemGray6))
+            .cornerRadius(12.0)
+            .shadow(radius: 16.0)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-        .background(Color(UIColor.systemGroupedBackground))
-        .cornerRadius(12.0)
     }
 }
 
@@ -50,24 +76,29 @@ struct SongsViewModel: View {
     @State var items: MusicItemCollection<MusicPersonalRecommendation> = []
 
     var body: some View {
-        SnappingScrollView(.vertical, decelerationRate: .fast) {
-            VStack(spacing: 0.0) {
-                ForEach(items) { reccommendation in
-                    ForEach(reccommendation.albums) { album in
-                        AlbumCardView(album: album).padding(.bottom, 20.0).scrollSnappingAnchor(.bounds)
+        GeometryReader { geometry in
+            SnappingScrollView(.vertical, decelerationRate: .fast, showsIndicators: false) {
+                VStack(spacing: 0.0) {
+                    ForEach(items) { reccommendation in
+                        ForEach(reccommendation.albums) { album in
+                            AlbumCardView(album: album)
+                                .scrollSnappingAnchor(.bounds)
+                                .padding(.bottom, 40.0)
+                                .frame(maxWidth: .infinity, minHeight: geometry.size.height * 0.92)
+                        }
                     }
-                }
-            }.padding([.horizontal], 20.0)
-        }.onAppear {
-            fetchMusic()
+                }.padding([.horizontal], 20.0)
+            }.onAppear {
+                fetchMusic()
+            }
         }
     }
 
     private let request: MusicPersonalRecommendationsRequest = {
         var request = MusicPersonalRecommendationsRequest()
 
-        request.limit = 5
-        request.offset = 0
+        // request.limit = 5
+        // request.offset = 0
 
         return request
     }()
