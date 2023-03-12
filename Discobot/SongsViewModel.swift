@@ -7,6 +7,7 @@
 
 import MusicKit
 import SwiftUI
+import SwiftUISnappingScrollView
 
 struct Item: Identifiable, Hashable {
     var id: UUID
@@ -19,7 +20,7 @@ struct AlbumCardView: View {
     var album: Album
 
     var body: some View {
-        VStack(alignment: .leading) {
+        LazyVStack(alignment: .center) {
             let artSize = 200.0 // geometry.size.width
             AsyncImage(
                 url: album.artwork?.url(width: Int(artSize), height: Int(artSize)),
@@ -34,7 +35,7 @@ struct AlbumCardView: View {
                         .aspectRatio(1, contentMode: .fit)
                 }
             ).frame(maxWidth: .infinity)
-            VStack(alignment: .leading, spacing: 8.0) {
+            VStack(alignment: .center, spacing: 8.0) {
                 Text(album.title).font(Font.system(.headline))
                 Text(album.artistName).font(.system(.subheadline))
             }.padding([.horizontal, .bottom], 8.0)
@@ -49,11 +50,11 @@ struct SongsViewModel: View {
     @State var items: MusicItemCollection<MusicPersonalRecommendation> = []
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 20.0) {
+        SnappingScrollView(.vertical, decelerationRate: .fast) {
+            VStack(spacing: 0.0) {
                 ForEach(items) { reccommendation in
                     ForEach(reccommendation.albums) { album in
-                        AlbumCardView(album: album)
+                        AlbumCardView(album: album).padding(.bottom, 20.0).scrollSnappingAnchor(.bounds)
                     }
                 }
             }.padding([.horizontal], 20.0)

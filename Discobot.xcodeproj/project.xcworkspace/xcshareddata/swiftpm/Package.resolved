@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "swiftuisnappingscrollview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ciaranrobrien/SwiftUISnappingScrollView",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e2cd31e59f61478dae08b9f941bfb910c9413f00"
+      }
+    }
+  ],
+  "version" : 2
+}
