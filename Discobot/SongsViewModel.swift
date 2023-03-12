@@ -19,17 +19,27 @@ struct AlbumCardView: View {
     var album: Album
 
     var body: some View {
-        HStack {
-            AsyncImage(url: album.artwork?.url(width: 75, height: 75)).frame(width: 75, height: 75)
-            VStack(alignment: .leading) {
-                Text(album.title).font(.title3)
-                Text(album.artistName).font(.footnote)
-            }.padding(4.0)
+        VStack(alignment: .leading) {
+            let artSize = 200.0 // geometry.size.width
+            AsyncImage(
+                url: album.artwork?.url(width: Int(artSize), height: Int(artSize)),
+                content: { image in
+                    image.resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                },
+                placeholder: {
+                    ProgressView()
+                }
+            ).frame(maxWidth: .infinity) // TODO: Frame so placeholder is correct full size
+            VStack(alignment: .leading, spacing: 8.0) {
+                Text(album.title).font(Font.system(.headline))
+                Text(album.artistName).font(.system(.subheadline))
+            }.padding([.horizontal, .bottom], 8.0)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: .center)
         .background(Color(UIColor.systemGroupedBackground))
         .cornerRadius(8.0)
-        // .padding(4.0)
     }
 }
 
@@ -38,13 +48,13 @@ struct SongsViewModel: View {
 
     var body: some View {
         ScrollView {
-            VStack {
+            LazyVStack(spacing: 20.0) {
                 ForEach(items) { reccommendation in
                     ForEach(reccommendation.albums) { album in
                         AlbumCardView(album: album)
                     }
                 }
-            }.padding([.horizontal], 40.0)
+            }.padding([.horizontal], 20.0)
         }.onAppear {
             fetchMusic()
         }
