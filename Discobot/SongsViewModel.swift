@@ -15,29 +15,46 @@ struct Item: Identifiable, Hashable {
     let imageUrl: URL?
 }
 
-struct SongsViewModel: View {
-    @State var songs = [Item]()
+struct AlbumCardView: View {
+    var album: Album
 
     var body: some View {
-        NavigationView {
-            List(songs) { song in
-                HStack {
-                    AsyncImage(url: song.imageUrl).frame(width: 75, height: 75, alignment: .center)
-                    VStack(alignment: .leading) {
-                        Text(song.name).font(.title3)
-                        Text(song.artist).font(.footnote)
+        HStack {
+            AsyncImage(url: album.artwork?.url(width: 75, height: 75)).frame(width: 75, height: 75)
+            VStack(alignment: .leading) {
+                Text(album.title).font(.title3)
+                Text(album.artistName).font(.footnote)
+            }.padding(4.0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(UIColor.systemGroupedBackground))
+        .cornerRadius(8.0)
+        // .padding(4.0)
+    }
+}
+
+struct SongsViewModel: View {
+    @State var items: MusicItemCollection<MusicPersonalRecommendation> = []
+
+    var body: some View {
+        ScrollView {
+            VStack {
+                ForEach(items) { reccommendation in
+                    ForEach(reccommendation.albums) { album in
+                        AlbumCardView(album: album)
                     }
                 }
-            }
+            }.padding([.horizontal], 40.0)
         }.onAppear {
             fetchMusic()
         }
     }
 
-    private let request: MusicCatalogSearchRequest = {
-        var request = MusicCatalogSearchRequest(term: "Happy", types: [Song.self])
+    private let request: MusicPersonalRecommendationsRequest = {
+        var request = MusicPersonalRecommendationsRequest()
 
-        request.limit = 25
+        request.limit = 5
+        request.offset = 0
 
         return request
     }()
@@ -45,6 +62,7 @@ struct SongsViewModel: View {
     private func fetchMusic() {
         Task {
             // Request permission
+            // TODO: Move to a login screen
             let status = await MusicAuthorization.request()
 
             switch status {
@@ -53,14 +71,8 @@ struct SongsViewModel: View {
                 do {
                     let result = try await request.response()
 
-                    self.songs = result.songs.compactMap {
-                        .init(
-                            id: UUID(),
-                            name: $0.title,
-                            artist: $0.artistName,
-                            imageUrl: $0.artwork?.url(width: 75, height: 75))
-                    }
-                    print(String(describing: songs[0]))
+                    self.items = result.recommendations
+                    print(String(describing: self.items))
                 } catch {
                     print(String(describing: error))
                 }
