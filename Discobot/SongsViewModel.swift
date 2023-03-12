@@ -47,8 +47,12 @@ struct AlbumCardView: View {
 
                     // Item info
                     VStack(alignment: .leading, spacing: 8.0) {
-                        Text(album.title).font(Font.system(.headline))
-                        Text(album.artistName).font(.system(.subheadline))
+                        Text(album.title)
+                            .font(Font.system(.headline))
+                            .foregroundColor(Color(album.artwork?.primaryTextColor ?? UIColor.black.cgColor))
+                        Text(album.artistName)
+                            .font(.system(.subheadline))
+                            .foregroundColor(Color(album.artwork?.secondaryTextColor ?? UIColor.black.cgColor))
                     }.padding(.top, 8.0)
 
                     // Push all remaining content to the bottom of the available space
@@ -57,7 +61,9 @@ struct AlbumCardView: View {
                     // Item card - Full width and horizontally centered
                     VStack(spacing: 16.0) {
                         // Play button
-                        Text("PLAY").font(Font.system(.title3))
+                        Text("PLAY")
+                            .font(Font.system(.title3))
+                            .foregroundColor(Color(album.artwork?.tertiaryTextColor ?? UIColor.black.cgColor))
                     }.frame(maxWidth: .infinity, alignment: .center)
                 }
                 // Padding, for a e s t h e t i c
@@ -65,7 +71,7 @@ struct AlbumCardView: View {
                 // Lock height as the difference between the artwork height and the full available height
                 .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
             }
-            .background(Color(UIColor.systemGray6))
+            .background(Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor))
             .cornerRadius(12.0)
             .shadow(radius: 16.0)
         }
@@ -75,6 +81,8 @@ struct AlbumCardView: View {
 struct SongsViewModel: View {
     @State var items: MusicItemCollection<MusicPersonalRecommendation> = []
 
+    let itemPadding = 40.0
+
     var body: some View {
         GeometryReader { geometry in
             SnappingScrollView(.vertical, decelerationRate: .fast, showsIndicators: false) {
@@ -82,9 +90,9 @@ struct SongsViewModel: View {
                     ForEach(items) { reccommendation in
                         ForEach(reccommendation.albums) { album in
                             AlbumCardView(album: album)
-                                .padding(.bottom, 40.0)
-                                .frame(maxWidth: .infinity, minHeight: geometry.size.height * 0.95)
                                 .scrollSnappingAnchor(.bounds)
+                                .padding(.bottom, itemPadding)
+                                .frame(maxWidth: .infinity, minHeight: geometry.size.height * 0.9)
                         }
                     }
                 }.padding([.horizontal], 20.0)
