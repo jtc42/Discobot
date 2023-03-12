@@ -92,9 +92,9 @@ struct SongsViewModel: View {
                             AlbumCardView(album: album)
                                 // Pad and set scroll anchor
                                 // NOTE: I have no idea why this weird layout works, but it does
-                                .padding(.bottom, itemPadding * 0.9)
+                                .padding(.bottom, itemPadding - 1)
                                 .scrollSnappingAnchor(.bounds)
-                                .padding(.bottom, itemPadding * 0.1)
+                                .padding(.bottom, 1)
                                 // Set the total frame height to 90% of the viewport (used by AlbumCardView for child sizing)
                                 .frame(maxWidth: .infinity, minHeight: geometry.size.height * 0.9)
                         }
