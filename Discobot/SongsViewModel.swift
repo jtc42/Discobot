@@ -90,7 +90,7 @@ struct SongsViewModel: View {
                     VStack(spacing: 0) {
                         ForEach(items) { reccommendation in
                             ForEach(reccommendation.albums) { album in
-                                let itemId = UUID()
+                                let itemId = reccommendation.id.rawValue + album.id.rawValue
                                 AlbumCardView(album: album)
                                     // Pad and set scroll anchor
                                     // NOTE: I have no idea why this weird layout works, but it does
