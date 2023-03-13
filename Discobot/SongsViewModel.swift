@@ -18,6 +18,113 @@ struct Item: Identifiable, Hashable {
 
 struct AlbumCardView: View {
     var album: Album
+    let playbackId: String
+    @Binding public var nowPlayingId: String?
+
+    // Colours, UI etc
+    var cardColour: Color {
+        return Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
+    }
+
+    var primaryTextColor: Color {
+        return Color(album.artwork?.primaryTextColor ?? UIColor.black.cgColor)
+    }
+
+    var buttonBackgroundColor: Color {
+        return Color(album.artwork?.secondaryTextColor ?? UIColor.systemGray2.cgColor)
+    }
+
+    var buttonLabelColor: Color {
+        return Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
+    }
+
+    /// The MusicKit player to use for Apple Music playback.
+    private let player = SystemMusicPlayer.shared
+    /// The state of the MusicKit player to use for Apple Music playback.
+    @ObservedObject private var playerState = SystemMusicPlayer.shared.state
+
+    /// `true` when the player is playing.
+    private var isPlaying: Bool {
+        return (playerState.playbackStatus == .playing)
+    }
+
+    /// `true` when this album is currently active (may be paused).
+    private var nowPlayingThisAlbum: Bool {
+        return (nowPlayingId == playbackId)
+    }
+
+    /// `true` when this album is currently active  and playing
+    private var isPlayingThisAlbum: Bool {
+        return isPlaying && nowPlayingThisAlbum
+    }
+
+    /// `true` when the album detail view needs to disable the Play/Pause button.
+//    private var isPlayButtonDisabled: Bool {
+//        let canPlayCatalogContent = musicSubscription?.canPlayCatalogContent ?? false
+//        return !canPlayCatalogContent
+//    }
+    var isPlayButtonDisabled: Bool = false
+
+    /// A declaration of the Play/Pause button, and (if appropriate) the Join button, side by side.
+    private var playButton: some View {
+        HStack {
+            Button(action: handlePlayButtonSelected) {
+                HStack {
+                    Image(systemName: isPlayingThisAlbum ? "pause.fill" : "play.fill")
+                    Text(isPlayingThisAlbum ? "Pause" : "Play")
+                }
+                .frame(maxWidth: .infinity, maxHeight: 20)
+            }.font(.title3.bold())
+                .foregroundColor(self.buttonLabelColor)
+                .padding()
+                .background(self.buttonBackgroundColor.cornerRadius(8))
+                .disabled(isPlayButtonDisabled)
+                .animation(.easeInOut(duration: 0.1), value: isPlayingThisAlbum)
+
+//            if shouldOfferSubscription {
+//                subscriptionOfferButton
+//            }
+        }
+    }
+
+    /// The action to perform when the user taps the Play/Pause button.
+    private func handlePlayButtonSelected() {
+        // If this album isn't actively playing
+        if !isPlayingThisAlbum {
+            // If this album isn't active
+            if !nowPlayingThisAlbum {
+                // Set this album as the queue and start playing
+                player.queue = [album]
+                beginPlaying()
+            } else { // If this album is active, but not playing right now
+                // Resume
+                Task {
+                    do {
+                        try await player.play()
+                    } catch {
+                        print("Failed to resume playing with error: \(error).")
+                    }
+                }
+            }
+        } else {
+            player.pause()
+        }
+    }
+
+    /// A convenience method for beginning music playback and setting the nowPlayingId.
+    ///
+    /// Call this instead of `MusicPlayer`’s `play()`
+    /// method whenever the playback queue is reset.
+    private func beginPlaying() {
+        Task {
+            do {
+                try await player.play()
+                nowPlayingId = playbackId
+            } catch {
+                print("Failed to prepare to play with error: \(error).")
+            }
+        }
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -49,11 +156,11 @@ struct AlbumCardView: View {
                     VStack(alignment: .leading, spacing: 8.0) {
                         Text(album.title)
                             .font(Font.system(.headline))
-                            .foregroundColor(Color(album.artwork?.primaryTextColor ?? UIColor.black.cgColor))
                         Text(album.artistName)
                             .font(.system(.subheadline))
-                            .foregroundColor(Color(album.artwork?.secondaryTextColor ?? UIColor.black.cgColor))
-                    }.padding(.top, 8.0)
+                    }
+                    .foregroundColor(self.primaryTextColor)
+                    .padding(.top, 8.0)
 
                     // Push all remaining content to the bottom of the available space
                     Spacer()
@@ -61,18 +168,19 @@ struct AlbumCardView: View {
                     // Item card - Full width and horizontally centered
                     VStack(spacing: 16.0) {
                         // Play button
-                        Text("PLAY")
-                            .font(Font.system(.title3))
-                            .foregroundColor(Color(album.artwork?.tertiaryTextColor ?? UIColor.black.cgColor))
+                        playButton
                     }.frame(maxWidth: .infinity, alignment: .center)
                 }
                 // Padding, for a e s t h e t i c
-                .padding([.horizontal, .bottom], 10.0)
+                .padding([.horizontal, .bottom], 20.0)
                 // Lock height as the difference between the artwork height and the full available height
                 .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
             }
             .background(Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor))
             .cornerRadius(12.0)
+            .overlay( /// Rounded border
+                RoundedRectangle(cornerRadius: 12.0).stroke(Color(UIColor.systemGray4), lineWidth: 0.5)
+            )
             .shadow(radius: 16.0)
         }
     }
@@ -80,6 +188,7 @@ struct AlbumCardView: View {
 
 struct SongsViewModel: View {
     @State var items: MusicItemCollection<MusicPersonalRecommendation> = []
+    @State var nowPlayingId: String? = nil
 
     let itemPadding = 40.0
 
@@ -91,7 +200,7 @@ struct SongsViewModel: View {
                         ForEach(items) { reccommendation in
                             ForEach(reccommendation.albums) { album in
                                 let itemId = reccommendation.id.rawValue + album.id.rawValue
-                                AlbumCardView(album: album)
+                                AlbumCardView(album: album, playbackId: itemId, nowPlayingId: $nowPlayingId)
                                     // Pad and set scroll anchor
                                     // NOTE: I have no idea why this weird layout works, but it does
                                     .padding(.bottom, itemPadding - 1)
