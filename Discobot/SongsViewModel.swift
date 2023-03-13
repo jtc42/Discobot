@@ -4,24 +4,23 @@
 //
 //  Created by Joel Collins on 11/03/2023.
 //
+// TODO: Handle previews, see https://developer.apple.com/forums/thread/685311
+// TODO: Handle subscription state, see https://developer.apple.com/documentation/musickit/using_musickit_to_integrate_with_apple_music
+// TODO: Handle loading more items at end of scroll
 
 import MusicKit
 import SwiftUI
 import SwiftUISnappingScrollView
 
-struct Item: Identifiable, Hashable {
-    var id: UUID
-    let name: String
-    let artist: String
-    let imageUrl: URL?
-}
-
 struct AlbumCardView: View {
+    /// Album object for this view instance
     var album: Album
+    /// Playback ID of this instance, to check if this album is currently active
     let playbackId: String
+    /// Binding to the parent view's currently active playbackId
     @Binding public var nowPlayingId: String?
 
-    // Colours, UI etc
+    /// Colours, UI etc
     var cardColour: Color {
         return Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
     }
