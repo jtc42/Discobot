@@ -85,23 +85,31 @@ struct SongsViewModel: View {
 
     var body: some View {
         GeometryReader { geometry in
-            SnappingScrollView(.vertical, decelerationRate: .fast, showsIndicators: false) {
-                VStack(spacing: 0) {
-                    ForEach(items) { reccommendation in
-                        ForEach(reccommendation.albums) { album in
-                            AlbumCardView(album: album)
-                                // Pad and set scroll anchor
-                                // NOTE: I have no idea why this weird layout works, but it does
-                                .padding(.bottom, itemPadding - 1)
-                                .scrollSnappingAnchor(.bounds)
-                                .padding(.bottom, 1)
-                                // Set the total frame height to 90% of the viewport (used by AlbumCardView for child sizing)
-                                .frame(maxWidth: .infinity, minHeight: geometry.size.height * 0.9)
+            ScrollViewReader { reader in
+                SnappingScrollView(.vertical, decelerationRate: .fast, showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        ForEach(items) { reccommendation in
+                            ForEach(reccommendation.albums) { album in
+                                let itemId = UUID()
+                                AlbumCardView(album: album)
+                                    // Pad and set scroll anchor
+                                    // NOTE: I have no idea why this weird layout works, but it does
+                                    .padding(.bottom, itemPadding - 1)
+                                    .scrollSnappingAnchor(.bounds).id(itemId)
+                                    .padding(.bottom, 1)
+                                    // Set the total frame height to 90% of the viewport (used by AlbumCardView for child sizing)
+                                    .frame(maxWidth: .infinity, minHeight: geometry.size.height * 0.9)
+                                    .onTapGesture {
+                                        withAnimation {
+                                            reader.scrollTo(itemId, anchor: .top)
+                                        }
+                                    }
+                            }
                         }
-                    }
-                }.padding([.horizontal], 20.0)
-            }.onAppear {
-                fetchMusic()
+                    }.padding([.horizontal], 20.0)
+                }.onAppear {
+                    fetchMusic()
+                }
             }
         }
     }
