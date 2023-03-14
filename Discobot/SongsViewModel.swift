@@ -151,6 +151,7 @@ struct AlbumCardView: View {
     }
 
     func startPreviewQueue() async {
+        print("Previewing: \(album.title)")
         // Fetch previews if we haven't already
         if previewUrlStrings == nil {
             await fetchPreviewAssets()
@@ -192,9 +193,9 @@ struct AlbumCardView: View {
                     }
                 )
                 .frame(maxWidth: .infinity)
-                .task { // Async task to run when artwork first appears
-                    await fetchPreviewAssets()
-                }
+//                .task { // Async task to run when artwork first appears
+//                    await fetchPreviewAssets()
+//                }
 
                 // Everything other than album art
                 VStack(alignment: .leading, spacing: 16.0) {
@@ -298,7 +299,6 @@ struct SongsViewModel: View {
                     let result = try await request.response()
 
                     self.items = result.recommendations
-                    print(String(describing: self.items))
                 } catch {
                     print(String(describing: error))
                 }
