@@ -8,19 +8,25 @@
 // TODO: Handle subscription state, see https://developer.apple.com/documentation/musickit/using_musickit_to_integrate_with_apple_music
 // TODO: Handle loading more items at end of scroll
 
+import AVFoundation
 import MusicKit
 import SwiftUI
 import SwiftUISnappingScrollView
 
 struct AlbumCardView: View {
+    // MARK: - Initialisation
+
     /// Album object for this view instance
     var album: Album
     /// Playback ID of this instance, to check if this album is currently active
     let playbackId: String
     /// Binding to the parent view's currently active playbackId
     @Binding public var nowPlayingId: String?
+    /// Player for previews
+    let previewPlayer: AVQueuePlayer
 
-    /// Colours, UI etc
+    // MARK: - Colours, UI etc
+
     var cardColour: Color {
         return Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
     }
@@ -36,6 +42,8 @@ struct AlbumCardView: View {
     var buttonLabelColor: Color {
         return Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
     }
+
+    // MARK: - System music playback
 
     /// The MusicKit player to use for Apple Music playback.
     private let player = SystemMusicPlayer.shared
@@ -125,6 +133,44 @@ struct AlbumCardView: View {
         }
     }
 
+    // MARK: - Preview playback
+
+    @State private var previewUrlStrings: [String]?
+
+    func fetchPreviewAssets() async {
+        do {
+            let fullAlbum = try await album.with(.tracks)
+            if let tracks = fullAlbum.tracks {
+                previewUrlStrings = tracks.compactMap {
+                    $0.previewAssets?.first?.url?.absoluteString
+                }
+            }
+        } catch {
+            print("Failed to load album tracks")
+        }
+    }
+
+    func startPreviewQueue() async {
+        // Fetch previews if we haven't already
+        if previewUrlStrings == nil {
+            await fetchPreviewAssets()
+        }
+
+        previewPlayer.pause()
+        previewPlayer.removeAllItems()
+
+        if let previewUrlStrings = previewUrlStrings {
+            for urlString in previewUrlStrings {
+                if let url = URL(string: urlString) {
+                    previewPlayer.insert(AVPlayerItem(url: url), after: nil)
+                }
+            }
+            previewPlayer.play()
+        }
+    }
+
+    // MARK: - View body
+
     var body: some View {
         GeometryReader { geometry in
             // Height of VStack is determined by it's children, and the height of the children
@@ -144,7 +190,11 @@ struct AlbumCardView: View {
                             // Force to a square, so cards with placeholders are roughly the right size
                             .aspectRatio(1, contentMode: .fit)
                     }
-                ).frame(maxWidth: .infinity)
+                )
+                .frame(maxWidth: .infinity)
+                .task { // Async task to run when artwork first appears
+                    await fetchPreviewAssets()
+                }
 
                 // Everything other than album art
                 VStack(alignment: .leading, spacing: 16.0) {
@@ -167,7 +217,9 @@ struct AlbumCardView: View {
                     // Item card - Full width and horizontally centered
                     VStack(spacing: 16.0) {
                         // Play button
-                        playButton
+                        playButton.task {
+                            await startPreviewQueue()
+                        }
                     }.frame(maxWidth: .infinity, alignment: .center)
                 }
                 // Padding, for a e s t h e t i c
@@ -189,6 +241,8 @@ struct SongsViewModel: View {
     @State var items: MusicItemCollection<MusicPersonalRecommendation> = []
     @State var nowPlayingId: String? = nil
 
+    let previewPlayer: AVQueuePlayer = .init()
+
     let itemPadding = 40.0
 
     var body: some View {
@@ -199,7 +253,7 @@ struct SongsViewModel: View {
                         ForEach(items) { reccommendation in
                             ForEach(reccommendation.albums) { album in
                                 let itemId = reccommendation.id.rawValue + album.id.rawValue
-                                AlbumCardView(album: album, playbackId: itemId, nowPlayingId: $nowPlayingId)
+                                AlbumCardView(album: album, playbackId: itemId, nowPlayingId: $nowPlayingId, previewPlayer: previewPlayer)
                                     // Pad and set scroll anchor
                                     // NOTE: I have no idea why this weird layout works, but it does
                                     .padding(.bottom, itemPadding - 1)
