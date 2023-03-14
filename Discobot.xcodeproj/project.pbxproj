@@ -13,7 +13,6 @@
 		5DCDE0E629BCF3AB00AA3287 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DCDE0E529BCF3AB00AA3287 /* Preview Assets.xcassets */; };
 		5DCDE0EE29BCF3E300AA3287 /* MusicKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCDE0ED29BCF3E300AA3287 /* MusicKit.framework */; };
 		5DCDE0F229BCF5A200AA3287 /* SongsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE0F129BCF5A200AA3287 /* SongsViewModel.swift */; };
-		5DCDE0F829BE367A00AA3287 /* SwiftUISnappingScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 5DCDE0F729BE367A00AA3287 /* SwiftUISnappingScrollView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,7 +31,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5DCDE0F829BE367A00AA3287 /* SwiftUISnappingScrollView in Frameworks */,
 				5DCDE0EE29BCF3E300AA3287 /* MusicKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -103,7 +101,6 @@
 			);
 			name = Discobot;
 			packageProductDependencies = (
-				5DCDE0F729BE367A00AA3287 /* SwiftUISnappingScrollView */,
 			);
 			productName = Discobot;
 			productReference = 5DCDE0DB29BCF3AA00AA3287 /* Discobot.app */;
@@ -134,7 +131,6 @@
 			);
 			mainGroup = 5DCDE0D229BCF3AA00AA3287;
 			packageReferences = (
-				5DCDE0F629BE367A00AA3287 /* XCRemoteSwiftPackageReference "SwiftUISnappingScrollView" */,
 			);
 			productRefGroup = 5DCDE0DC29BCF3AA00AA3287 /* Products */;
 			projectDirPath = "";
@@ -367,25 +363,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		5DCDE0F629BE367A00AA3287 /* XCRemoteSwiftPackageReference "SwiftUISnappingScrollView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ciaranrobrien/SwiftUISnappingScrollView";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		5DCDE0F729BE367A00AA3287 /* SwiftUISnappingScrollView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5DCDE0F629BE367A00AA3287 /* XCRemoteSwiftPackageReference "SwiftUISnappingScrollView" */;
-			productName = SwiftUISnappingScrollView;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5DCDE0D329BCF3AA00AA3287 /* Project object */;
 }

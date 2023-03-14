@@ -11,7 +11,6 @@
 import AVFoundation
 import MusicKit
 import SwiftUI
-import SwiftUISnappingScrollView
 
 struct AlbumCardView: View {
     // MARK: - Initialisation
@@ -192,7 +191,7 @@ struct AlbumCardView: View {
                             .aspectRatio(1, contentMode: .fit)
                     }
                 )
-                .frame(maxWidth: .infinity)
+                .frame(width: geometry.size.width)
 //                .task { // Async task to run when artwork first appears
 //                    await fetchPreviewAssets()
 //                }
@@ -218,9 +217,10 @@ struct AlbumCardView: View {
                     // Item card - Full width and horizontally centered
                     VStack(spacing: 16.0) {
                         // Play button
-                        playButton.task {
-                            await startPreviewQueue()
-                        }
+                        playButton
+//                            .task {
+//                                await startPreviewQueue()
+//                            }
                     }.frame(maxWidth: .infinity, alignment: .center)
                 }
                 // Padding, for a e s t h e t i c
@@ -229,11 +229,6 @@ struct AlbumCardView: View {
                 .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
             }
             .background(Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor))
-            .cornerRadius(12.0)
-            .overlay( /// Rounded border
-                RoundedRectangle(cornerRadius: 12.0).stroke(Color(UIColor.systemGray4), lineWidth: 0.5)
-            )
-            .shadow(radius: 16.0)
         }
     }
 }
@@ -248,29 +243,18 @@ struct SongsViewModel: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollViewReader { reader in
-                SnappingScrollView(.vertical, decelerationRate: .fast, showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        ForEach(items) { reccommendation in
-                            ForEach(reccommendation.albums) { album in
-                                let itemId = reccommendation.id.rawValue + album.id.rawValue
-                                AlbumCardView(album: album, playbackId: itemId, nowPlayingId: $nowPlayingId, previewPlayer: previewPlayer)
-                                    // Pad and set scroll anchor
-                                    // NOTE: I have no idea why this weird layout works, but it does
-                                    .padding(.bottom, itemPadding - 1)
-                                    .scrollSnappingAnchor(.bounds).id(itemId)
-                                    .padding(.bottom, 1)
-                                    // Set the total frame height to 90% of the viewport (used by AlbumCardView for child sizing)
-                                    .frame(maxWidth: .infinity, minHeight: geometry.size.height * 0.9)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            reader.scrollTo(itemId, anchor: .top)
-                                        }
-                                    }
-                            }
+            ScrollViewReader { _ in
+                TabView {
+                    ForEach(items) { reccommendation in
+                        ForEach(reccommendation.albums) { album in
+                            let itemId = reccommendation.id.rawValue + album.id.rawValue
+                            AlbumCardView(album: album, playbackId: itemId, nowPlayingId: $nowPlayingId, previewPlayer: previewPlayer)
+                                .frame(width: geometry.size.width, height: geometry.size.height)
                         }
-                    }.padding([.horizontal], 20.0)
-                }.onAppear {
+                    }
+                }
+                .tabViewStyle(PageTabViewStyle())
+                .onAppear {
                     fetchMusic()
                 }
             }
