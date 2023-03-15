@@ -4,13 +4,18 @@
 //
 //  Created by Joel Collins on 11/03/2023.
 //
+// TODO: Fix landscape
 // TODO: Handle previews, see https://developer.apple.com/forums/thread/685311
 // TODO: Handle subscription state, see https://developer.apple.com/documentation/musickit/using_musickit_to_integrate_with_apple_music
 // TODO: Handle loading more items at end of scroll
+// TODO: Show reccommendation.title on card somewhere
 
 import AVFoundation
 import MusicKit
 import SwiftUI
+import SwiftUIPageView
+
+let cardCornerRadius = 20.0
 
 struct AlbumCardView: View {
     // MARK: - Initialisation
@@ -19,8 +24,15 @@ struct AlbumCardView: View {
     var album: Album
     /// Playback ID of this instance, to check if this album is currently active
     let playbackId: String
+    /// Page index of this instance
+    // let pageIndex: Int
+
     /// Binding to the parent view's currently active playbackId
     @Binding public var nowPlayingId: String?
+
+    /// Binding to the parent view's currently in-view page index
+    @Binding public var currentIndex: Int
+
     /// Player for previews
     let previewPlayer: AVQueuePlayer
 
@@ -229,13 +241,26 @@ struct AlbumCardView: View {
                 .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
             }
             .background(Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor))
+            .cornerRadius(cardCornerRadius)
+            .overlay( /// Rounded border
+                RoundedRectangle(cornerRadius: cardCornerRadius).stroke(Color(UIColor.systemGray4), lineWidth: 0.5)
+            )
+            .shadow(radius: 16.0)
         }
     }
 }
 
+struct FeedItem {
+    let recommendationReason: String?
+    let recommendationTitle: String?
+    let item: MusicPersonalRecommendationItem
+}
+
 struct SongsViewModel: View {
     @State var items: MusicItemCollection<MusicPersonalRecommendation> = []
+
     @State var nowPlayingId: String? = nil
+    @State var currentIndex: Int = 0
 
     let previewPlayer: AVQueuePlayer = .init()
 
@@ -243,17 +268,20 @@ struct SongsViewModel: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollViewReader { _ in
-                TabView {
+            PageViewReader { _ in
+                VPageView(alignment: .center, pageHeight: geometry.size.height * 0.9, spacing: 24, index: $currentIndex) {
                     ForEach(items) { reccommendation in
                         ForEach(reccommendation.albums) { album in
+                            // TODO: Some way to either pass the VPageView onChange event to all AlbumCardView children (passing the new index as an arg, rather than having a binding), OR have the child AlbumCardViews populate a dictionary of preview links as soon as the top of the card is in view, and have the playback triggered directly in the VPageView onChange event (but would need to delay until we know we have the preview links asynchronously fetched. **Perhaps watch the value of the preview links dictionary binding and re-check preview playback**)
                             let itemId = reccommendation.id.rawValue + album.id.rawValue
-                            AlbumCardView(album: album, playbackId: itemId, nowPlayingId: $nowPlayingId, previewPlayer: previewPlayer)
-                                .frame(width: geometry.size.width, height: geometry.size.height)
+                            AlbumCardView(album: album, playbackId: itemId, nowPlayingId: $nowPlayingId, currentIndex: $currentIndex, previewPlayer: previewPlayer)
                         }
                     }
                 }
-                .tabViewStyle(PageTabViewStyle())
+                .onChange(of: currentIndex, perform: { newIndex in
+                    print(newIndex)
+                })
+                .padding(.horizontal, 12)
                 .onAppear {
                     fetchMusic()
                 }
@@ -281,7 +309,6 @@ struct SongsViewModel: View {
                 // Request -> Response
                 do {
                     let result = try await request.response()
-
                     self.items = result.recommendations
                 } catch {
                     print(String(describing: error))

@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "swiftuipageview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jtc42/SwiftUIPageView",
+      "state" : {
+        "branch" : "main",
+        "revision" : "770e9896ba078f10202c847ad6b13971acb24c16"
+      }
+    }
+  ],
+  "version" : 2
+}
