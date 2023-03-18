@@ -22,16 +22,17 @@ struct AlbumCardView: View {
 
     /// Album object for this view instance
     var album: Album
-    /// Playback ID of this instance, to check if this album is currently active
-    let playbackId: String
     /// Page index of this instance
-    // let pageIndex: Int
+    let pageIndex: Int
 
     /// Binding to the parent view's currently active playbackId
-    @Binding public var nowPlayingId: String?
+    @Binding public var nowPlayingIndex: Int?
 
     /// Binding to the parent view's currently in-view page index
     @Binding public var currentIndex: Int
+
+    /// Binding to the parent views map of preview links
+    // @Binding public var previewLinkMap: [Int: [String]]
 
     /// Player for previews
     let previewPlayer: AVQueuePlayer
@@ -68,7 +69,7 @@ struct AlbumCardView: View {
 
     /// `true` when this album is currently active (may be paused).
     private var nowPlayingThisAlbum: Bool {
-        return (nowPlayingId == playbackId)
+        return (nowPlayingIndex == pageIndex)
     }
 
     /// `true` when this album is currently active  and playing
@@ -137,47 +138,10 @@ struct AlbumCardView: View {
         Task {
             do {
                 try await player.play()
-                nowPlayingId = playbackId
+                nowPlayingIndex = pageIndex
             } catch {
                 print("Failed to prepare to play with error: \(error).")
             }
-        }
-    }
-
-    // MARK: - Preview playback
-
-    @State private var previewUrlStrings: [String]?
-
-    func fetchPreviewAssets() async {
-        do {
-            let fullAlbum = try await album.with(.tracks)
-            if let tracks = fullAlbum.tracks {
-                previewUrlStrings = tracks.compactMap {
-                    $0.previewAssets?.first?.url?.absoluteString
-                }
-            }
-        } catch {
-            print("Failed to load album tracks")
-        }
-    }
-
-    func startPreviewQueue() async {
-        print("Previewing: \(album.title)")
-        // Fetch previews if we haven't already
-        if previewUrlStrings == nil {
-            await fetchPreviewAssets()
-        }
-
-        previewPlayer.pause()
-        previewPlayer.removeAllItems()
-
-        if let previewUrlStrings = previewUrlStrings {
-            for urlString in previewUrlStrings {
-                if let url = URL(string: urlString) {
-                    previewPlayer.insert(AVPlayerItem(url: url), after: nil)
-                }
-            }
-            previewPlayer.play()
         }
     }
 
@@ -204,9 +168,6 @@ struct AlbumCardView: View {
                     }
                 )
                 .frame(width: geometry.size.width)
-//                .task { // Async task to run when artwork first appears
-//                    await fetchPreviewAssets()
-//                }
 
                 // Everything other than album art
                 VStack(alignment: .leading, spacing: 16.0) {
@@ -215,6 +176,7 @@ struct AlbumCardView: View {
 
                     // Item info
                     VStack(alignment: .leading, spacing: 8.0) {
+                        Text(String(pageIndex))
                         Text(album.title)
                             .font(Font.system(.headline))
                         Text(album.artistName)
@@ -230,9 +192,6 @@ struct AlbumCardView: View {
                     VStack(spacing: 16.0) {
                         // Play button
                         playButton
-//                            .task {
-//                                await startPreviewQueue()
-//                            }
                     }.frame(maxWidth: .infinity, alignment: .center)
                 }
                 // Padding, for a e s t h e t i c
@@ -250,16 +209,18 @@ struct AlbumCardView: View {
     }
 }
 
-struct FeedItem {
+struct FeedItem: Identifiable, Hashable {
+    var id = UUID()
     let recommendationReason: String?
     let recommendationTitle: String?
-    let item: MusicPersonalRecommendationItem
+    let album: Album
 }
 
 struct SongsViewModel: View {
     @State var items: MusicItemCollection<MusicPersonalRecommendation> = []
+    @State var flatItems: [FeedItem] = []
 
-    @State var nowPlayingId: String? = nil
+    @State var nowPlayingIndex: Int? = nil
     @State var currentIndex: Int = 0
 
     let previewPlayer: AVQueuePlayer = .init()
@@ -270,16 +231,14 @@ struct SongsViewModel: View {
         GeometryReader { geometry in
             PageViewReader { _ in
                 VPageView(alignment: .center, pageHeight: geometry.size.height * 0.9, spacing: 24, index: $currentIndex) {
-                    ForEach(items) { reccommendation in
-                        ForEach(reccommendation.albums) { album in
-                            // TODO: Some way to either pass the VPageView onChange event to all AlbumCardView children (passing the new index as an arg, rather than having a binding), OR have the child AlbumCardViews populate a dictionary of preview links as soon as the top of the card is in view, and have the playback triggered directly in the VPageView onChange event (but would need to delay until we know we have the preview links asynchronously fetched. **Perhaps watch the value of the preview links dictionary binding and re-check preview playback**)
-                            let itemId = reccommendation.id.rawValue + album.id.rawValue
-                            AlbumCardView(album: album, playbackId: itemId, nowPlayingId: $nowPlayingId, currentIndex: $currentIndex, previewPlayer: previewPlayer)
-                        }
+                    ForEach(Array(flatItems.enumerated()), id: \.element) { index, item in
+                        AlbumCardView(album: item.album, pageIndex: index, nowPlayingIndex: $nowPlayingIndex, currentIndex: $currentIndex, previewPlayer: previewPlayer)
                     }
                 }
                 .onChange(of: currentIndex, perform: { newIndex in
-                    print(newIndex)
+                    Task {
+                        await startPreviewFor(item: flatItems[newIndex].album)
+                    }
                 })
                 .padding(.horizontal, 12)
                 .onAppear {
@@ -289,14 +248,31 @@ struct SongsViewModel: View {
         }
     }
 
-    private let request: MusicPersonalRecommendationsRequest = {
-        var request = MusicPersonalRecommendationsRequest()
+    private func startPreviewQueue(previewUrlStrings: [String]) {
+        previewPlayer.pause()
+        previewPlayer.removeAllItems()
 
-        // request.limit = 5
-        // request.offset = 0
+        for urlString in previewUrlStrings {
+            if let url = URL(string: urlString) {
+                previewPlayer.insert(AVPlayerItem(url: url), after: nil)
+            }
+        }
+        previewPlayer.play()
+    }
 
-        return request
-    }()
+    private func startPreviewFor(item: Album) async {
+        do {
+            let fullAlbum = try await item.with(.tracks)
+            if let tracks = fullAlbum.tracks {
+                let previewUrlStrings = tracks.compactMap {
+                    $0.previewAssets?.first?.url?.absoluteString
+                }
+                startPreviewQueue(previewUrlStrings: previewUrlStrings)
+            }
+        } catch {
+            print("Failed to load album tracks")
+        }
+    }
 
     private func fetchMusic() {
         Task {
@@ -308,8 +284,23 @@ struct SongsViewModel: View {
             case .authorized:
                 // Request -> Response
                 do {
+                    var request = MusicPersonalRecommendationsRequest()
+                    // TODO: Add loading extra items but running this function again with a new offset
+                    request.limit = 25
+                    request.offset = 0
+
                     let result = try await request.response()
                     self.items = result.recommendations
+
+                    self.flatItems = result.recommendations.flatMap { recommendation in
+                        recommendation.albums.map { album in
+                            FeedItem(
+                                recommendationReason: recommendation.reason,
+                                recommendationTitle: recommendation.title,
+                                album: album
+                            )
+                        }
+                    }
                 } catch {
                     print(String(describing: error))
                 }
