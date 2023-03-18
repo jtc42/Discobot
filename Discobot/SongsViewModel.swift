@@ -262,7 +262,6 @@ struct FeedItem: Identifiable, Hashable {
 }
 
 struct SongsViewModel: View {
-    @State var items: MusicItemCollection<MusicPersonalRecommendation> = []
     @State var flatItems: [FeedItem] = []
 
     @State var nowPlayingIndex: Int? = nil
@@ -381,17 +380,7 @@ struct SongsViewModel: View {
                 request.offset = 0
 
                 let result = try await request.response()
-                items = result.recommendations
-
-                flatItems = result.recommendations.flatMap { recommendation in
-                    recommendation.albums.map { album in
-                        FeedItem(
-                            recommendationReason: recommendation.reason,
-                            recommendationTitle: recommendation.title,
-                            album: album
-                        )
-                    }
-                }
+                flatItems = flattenRecommendations(recommendations: result.recommendations)
             } catch {
                 print(String(describing: error))
             }
@@ -399,6 +388,61 @@ struct SongsViewModel: View {
         // Assign songs
         default:
             break
+        }
+    }
+
+    private func flattenRecommendations(
+        recommendations: MusicItemCollection<MusicPersonalRecommendation>,
+        simple: Bool = false,
+        maxGroupSize: Int = 3
+    ) -> [FeedItem] {
+        if simple {
+            return recommendations.flatMap { recommendation in
+                recommendation.albums.map { album in
+                    FeedItem(
+                        recommendationReason: recommendation.reason,
+                        recommendationTitle: recommendation.title,
+                        album: album
+                    )
+                }
+            }
+        } else {
+            // Items to show at the top of the feed
+            var items: [FeedItem] = []
+            // Spares to put at the end of the feed
+            var spares: [FeedItem] = []
+
+            // For each recommendation group
+            for recommendation in recommendations {
+                // Keep count of how many items in this recommendation
+                var groupCount = 0
+                // For each recommendation in the group
+                for album in recommendation.albums {
+                    // Iterate the group counter
+                    groupCount += 1
+
+                    // Create a feed item
+                    let item = FeedItem(
+                        recommendationReason: recommendation.reason,
+                        recommendationTitle: recommendation.title,
+                        album: album
+                    )
+                    // If we've not hit the max group size
+                    if groupCount <= maxGroupSize {
+                        // Add the item to the top of the feed
+                        items.append(item)
+                    } else {
+                        // Add the item to the spares at the bottom
+                        spares.append(item)
+                    }
+                }
+            }
+
+            // Shuffle spares
+            spares.shuffle()
+
+            // Join spare items to the bottom of the feed
+            return items + spares
         }
     }
 }
