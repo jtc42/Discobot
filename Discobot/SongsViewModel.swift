@@ -31,11 +31,11 @@ struct AlbumCardView: View {
     /// Binding to the parent view's currently in-view page index
     @Binding public var currentIndex: Int
 
+    /// Binding to whether the preview is muted or not
+    @Binding public var previewMuted: Bool
+
     /// Binding to the parent views map of preview links
     // @Binding public var previewLinkMap: [Int: [String]]
-
-    /// Player for previews
-    let previewPlayer: AVQueuePlayer
 
     // MARK: - Colours, UI etc
 
@@ -137,7 +137,11 @@ struct AlbumCardView: View {
     private func beginPlaying() {
         Task {
             do {
+                // Try playing with the system music player
                 try await player.play()
+                // Mute previews now something is actually playing
+                previewMuted = true
+                // Update the shared state for which item is playing
                 nowPlayingIndex = pageIndex
             } catch {
                 print("Failed to prepare to play with error: \(error).")
@@ -168,6 +172,17 @@ struct AlbumCardView: View {
                     }
                 )
                 .frame(width: geometry.size.width)
+                .overlay(alignment: .topTrailing) {
+                    Button(action: {
+                        previewMuted = !previewMuted
+                    }) {
+                        Image(systemName: previewMuted ? "speaker.slash.fill" : "speaker.fill")
+                            .padding(8)
+                            .background(.black.opacity(0.5))
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                    }.padding(12)
+                }
 
                 // Everything other than album art
                 VStack(alignment: .leading, spacing: 16.0) {
@@ -176,7 +191,6 @@ struct AlbumCardView: View {
 
                     // Item info
                     VStack(alignment: .leading, spacing: 8.0) {
-                        Text(String(pageIndex))
                         Text(album.title)
                             .font(Font.system(.headline))
                         Text(album.artistName)
@@ -223,6 +237,7 @@ struct SongsViewModel: View {
     @State var nowPlayingIndex: Int? = nil
     @State var currentIndex: Int = 0
 
+    @State var previewMuted: Bool = false
     let previewPlayer: AVQueuePlayer = .init()
 
     let itemPadding = 40.0
@@ -232,17 +247,35 @@ struct SongsViewModel: View {
             PageViewReader { _ in
                 VPageView(alignment: .center, pageHeight: geometry.size.height * 0.9, spacing: 24, index: $currentIndex) {
                     ForEach(Array(flatItems.enumerated()), id: \.element) { index, item in
-                        AlbumCardView(album: item.album, pageIndex: index, nowPlayingIndex: $nowPlayingIndex, currentIndex: $currentIndex, previewPlayer: previewPlayer)
+                        AlbumCardView(album: item.album, pageIndex: index, nowPlayingIndex: $nowPlayingIndex, currentIndex: $currentIndex, previewMuted: $previewMuted)
                     }
                 }
+                .padding(.horizontal, 12)
+                // When page changes
                 .onChange(of: currentIndex, perform: { newIndex in
                     Task {
-                        await startPreviewFor(item: flatItems[newIndex].album)
+                        if !previewMuted {
+                            await startPreviewFor(item: flatItems[newIndex].album)
+                        }
                     }
                 })
-                .padding(.horizontal, 12)
-                .onAppear {
-                    fetchMusic()
+                // When preview mute changes
+                .onChange(of: previewMuted, perform: { newPreviewMuted in
+                    Task {
+                        if newPreviewMuted {
+                            previewPlayer.pause()
+                        } else {
+                            await startPreviewFor(item: flatItems[currentIndex].album)
+                        }
+                        previewPlayer.isMuted = newPreviewMuted
+                    }
+                })
+                // On load, fetch music and start playing
+                .task {
+                    await fetchMusic()
+                    if !previewMuted {
+                        await startPreviewFor(item: flatItems[currentIndex].album)
+                    }
                 }
             }
         }
@@ -274,41 +307,39 @@ struct SongsViewModel: View {
         }
     }
 
-    private func fetchMusic() {
-        Task {
-            // Request permission
-            // TODO: Move to a login screen
-            let status = await MusicAuthorization.request()
+    private func fetchMusic() async {
+        // Request permission
+        // TODO: Move to a login screen
+        let status = await MusicAuthorization.request()
 
-            switch status {
-            case .authorized:
-                // Request -> Response
-                do {
-                    var request = MusicPersonalRecommendationsRequest()
-                    // TODO: Add loading extra items but running this function again with a new offset
-                    request.limit = 25
-                    request.offset = 0
+        switch status {
+        case .authorized:
+            // Request -> Response
+            do {
+                var request = MusicPersonalRecommendationsRequest()
+                // TODO: Add loading extra items but running this function again with a new offset
+                request.limit = 25
+                request.offset = 0
 
-                    let result = try await request.response()
-                    self.items = result.recommendations
+                let result = try await request.response()
+                items = result.recommendations
 
-                    self.flatItems = result.recommendations.flatMap { recommendation in
-                        recommendation.albums.map { album in
-                            FeedItem(
-                                recommendationReason: recommendation.reason,
-                                recommendationTitle: recommendation.title,
-                                album: album
-                            )
-                        }
+                flatItems = result.recommendations.flatMap { recommendation in
+                    recommendation.albums.map { album in
+                        FeedItem(
+                            recommendationReason: recommendation.reason,
+                            recommendationTitle: recommendation.title,
+                            album: album
+                        )
                     }
-                } catch {
-                    print(String(describing: error))
                 }
-
-            // Assign songs
-            default:
-                break
+            } catch {
+                print(String(describing: error))
             }
+
+        // Assign songs
+        default:
+            break
         }
     }
 }
