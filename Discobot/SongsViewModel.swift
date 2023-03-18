@@ -25,6 +25,10 @@ struct AlbumCardView: View {
     /// Page index of this instance
     let pageIndex: Int
 
+    /// Recommendation info
+    let recommendationTitle: String?
+    let recommendationReason: String?
+
     /// Binding to the parent view's currently active playbackId
     @Binding public var nowPlayingIndex: Int?
 
@@ -34,9 +38,6 @@ struct AlbumCardView: View {
     /// Binding to whether the preview is muted or not
     @Binding public var previewMuted: Bool
 
-    /// Binding to the parent views map of preview links
-    // @Binding public var previewLinkMap: [Int: [String]]
-
     // MARK: - Colours, UI etc
 
     var cardColour: Color {
@@ -45,6 +46,10 @@ struct AlbumCardView: View {
 
     var primaryTextColor: Color {
         return Color(album.artwork?.primaryTextColor ?? UIColor.black.cgColor)
+    }
+
+    var secondaryTextColor: Color {
+        return Color(album.artwork?.tertiaryTextColor ?? UIColor.gray.cgColor)
     }
 
     var buttonBackgroundColor: Color {
@@ -85,24 +90,37 @@ struct AlbumCardView: View {
     var isPlayButtonDisabled: Bool = false
 
     /// A declaration of the Play/Pause button, and (if appropriate) the Join button, side by side.
-    private var playButton: some View {
-        HStack {
+    private var primaryButtons: some View {
+        VStack {
+            // Play button
             Button(action: handlePlayButtonSelected) {
                 HStack {
                     Image(systemName: isPlayingThisAlbum ? "pause.fill" : "play.fill")
                     Text(isPlayingThisAlbum ? "Pause" : "Play")
                 }
-                .frame(maxWidth: .infinity, maxHeight: 20)
-            }.font(.title3.bold())
+                .frame(maxWidth: .infinity, maxHeight: 18)
+            }.font(.body.bold())
                 .foregroundColor(self.buttonLabelColor)
-                .padding()
+                .padding(15)
                 .background(self.buttonBackgroundColor.cornerRadius(8))
                 .disabled(isPlayButtonDisabled)
                 .animation(.easeInOut(duration: 0.1), value: isPlayingThisAlbum)
-
 //            if shouldOfferSubscription {
 //                subscriptionOfferButton
 //            }
+
+            // Add to library button (I really want an Open in Apple Music button instead...)
+//            Button(action: {}) {
+//                HStack {
+//                    Image(systemName: (album.libraryAddedDate != nil) ? "checkmark" : "plus")
+//                    Text((album.libraryAddedDate != nil) ? "Added" : "Add to Library")
+//                }
+//                .frame(maxWidth: .infinity, maxHeight: 18)
+//            }.font(.body.bold())
+//                .foregroundColor(self.buttonLabelColor)
+//                .padding(15)
+//                .background(self.buttonBackgroundColor.cornerRadius(8))
+//                .animation(.easeInOut(duration: 0.1), value: album.libraryAddedDate != nil)
         }
     }
 
@@ -189,6 +207,18 @@ struct AlbumCardView: View {
                     // OPTIONAL: Initial spacer to push item info down
                     Spacer()
 
+                    // Recommendation info
+                    VStack(alignment: .leading, spacing: 8.0) {
+                        if let recommendationTitle = recommendationTitle {
+                            Text(recommendationTitle)
+                                .font(Font.system(.caption))
+                        }
+                        if let recommendationReason = recommendationReason {
+                            Text(recommendationReason)
+                                .font(.system(.caption2))
+                        }
+                    }.foregroundColor(self.secondaryTextColor)
+
                     // Item info
                     VStack(alignment: .leading, spacing: 8.0) {
                         Text(album.title)
@@ -205,15 +235,16 @@ struct AlbumCardView: View {
                     // Item card - Full width and horizontally centered
                     VStack(spacing: 16.0) {
                         // Play button
-                        playButton
+                        primaryButtons
                     }.frame(maxWidth: .infinity, alignment: .center)
                 }
                 // Padding, for a e s t h e t i c
                 .padding([.horizontal, .bottom], 20.0)
                 // Lock height as the difference between the artwork height and the full available height
                 .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
+                // Apply a gradient background to the bottom half of the card
+                .background(Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor))
             }
-            .background(Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor))
             .cornerRadius(cardCornerRadius)
             .overlay( /// Rounded border
                 RoundedRectangle(cornerRadius: cardCornerRadius).stroke(Color(UIColor.systemGray4), lineWidth: 0.5)
@@ -237,22 +268,43 @@ struct SongsViewModel: View {
     @State var nowPlayingIndex: Int? = nil
     @State var currentIndex: Int = 0
 
-    @State var previewMuted: Bool = false
+    @State var previewMuted: Bool = true
     let previewPlayer: AVQueuePlayer = .init()
+
+    // Track if the user has changed page yet (used to auto-unmute)
+    @State var firstPageMove: Bool = true
 
     let itemPadding = 40.0
 
     var body: some View {
         GeometryReader { geometry in
-            PageViewReader { _ in
-                VPageView(alignment: .center, pageHeight: geometry.size.height * 0.9, spacing: 24, index: $currentIndex) {
+            PageViewReader { proxy in
+                VPageView(alignment: .top, pageHeight: geometry.size.height * 0.9, spacing: 24, index: $currentIndex) {
                     ForEach(Array(flatItems.enumerated()), id: \.element) { index, item in
-                        AlbumCardView(album: item.album, pageIndex: index, nowPlayingIndex: $nowPlayingIndex, currentIndex: $currentIndex, previewMuted: $previewMuted)
+                        AlbumCardView(
+                            album: item.album,
+                            pageIndex: index,
+                            recommendationTitle: item.recommendationTitle,
+                            recommendationReason: item.recommendationReason,
+                            nowPlayingIndex: $nowPlayingIndex,
+                            currentIndex: $currentIndex,
+                            previewMuted: $previewMuted
+                        )
+                        .onTapGesture {
+                            // Tapping before first page change will unmute
+                            initiatePreviews()
+                            // Tapping will move to the tapped page
+                            withAnimation {
+                                proxy.moveTo(index)
+                            }
+                        }
                     }
                 }
                 .padding(.horizontal, 12)
                 // When page changes
                 .onChange(of: currentIndex, perform: { newIndex in
+                    // If it's the first time the user has changed page, unmute
+                    initiatePreviews()
                     Task {
                         if !previewMuted {
                             await startPreviewFor(item: flatItems[newIndex].album)
@@ -278,6 +330,13 @@ struct SongsViewModel: View {
                     }
                 }
             }
+        }
+    }
+
+    private func initiatePreviews() {
+        if firstPageMove {
+            firstPageMove = false
+            previewMuted = false
         }
     }
 
