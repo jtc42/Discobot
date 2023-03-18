@@ -1,12 +1,12 @@
 {
   "pins" : [
     {
-      "identity" : "swiftuisnappingscrollview",
+      "identity" : "swiftuipageview",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ciaranrobrien/SwiftUISnappingScrollView",
+      "location" : "https://github.com/jtc42/SwiftUIPageView",
       "state" : {
         "branch" : "main",
-        "revision" : "e2cd31e59f61478dae08b9f941bfb910c9413f00"
+        "revision" : "770e9896ba078f10202c847ad6b13971acb24c16"
       }
     }
   ],

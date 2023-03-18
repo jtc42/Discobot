@@ -4,26 +4,39 @@
 //
 //  Created by Joel Collins on 11/03/2023.
 //
+// TODO: Fix landscape
 // TODO: Handle previews, see https://developer.apple.com/forums/thread/685311
 // TODO: Handle subscription state, see https://developer.apple.com/documentation/musickit/using_musickit_to_integrate_with_apple_music
 // TODO: Handle loading more items at end of scroll
+// TODO: Show reccommendation.title on card somewhere
 
 import AVFoundation
 import MusicKit
 import SwiftUI
-import SwiftUISnappingScrollView
+import SwiftUIPageView
+
+let cardCornerRadius = 20.0
 
 struct AlbumCardView: View {
     // MARK: - Initialisation
 
     /// Album object for this view instance
     var album: Album
-    /// Playback ID of this instance, to check if this album is currently active
-    let playbackId: String
+    /// Page index of this instance
+    let pageIndex: Int
+
+    /// Recommendation info
+    let recommendationTitle: String?
+    let recommendationReason: String?
+
     /// Binding to the parent view's currently active playbackId
-    @Binding public var nowPlayingId: String?
-    /// Player for previews
-    let previewPlayer: AVQueuePlayer
+    @Binding public var nowPlayingIndex: Int?
+
+    /// Binding to the parent view's currently in-view page index
+    @Binding public var currentIndex: Int
+
+    /// Binding to whether the preview is muted or not
+    @Binding public var previewMuted: Bool
 
     // MARK: - Colours, UI etc
 
@@ -33,6 +46,10 @@ struct AlbumCardView: View {
 
     var primaryTextColor: Color {
         return Color(album.artwork?.primaryTextColor ?? UIColor.black.cgColor)
+    }
+
+    var secondaryTextColor: Color {
+        return Color(album.artwork?.tertiaryTextColor ?? UIColor.gray.cgColor)
     }
 
     var buttonBackgroundColor: Color {
@@ -57,7 +74,7 @@ struct AlbumCardView: View {
 
     /// `true` when this album is currently active (may be paused).
     private var nowPlayingThisAlbum: Bool {
-        return (nowPlayingId == playbackId)
+        return (nowPlayingIndex == pageIndex)
     }
 
     /// `true` when this album is currently active  and playing
@@ -73,24 +90,37 @@ struct AlbumCardView: View {
     var isPlayButtonDisabled: Bool = false
 
     /// A declaration of the Play/Pause button, and (if appropriate) the Join button, side by side.
-    private var playButton: some View {
-        HStack {
+    private var primaryButtons: some View {
+        VStack {
+            // Play button
             Button(action: handlePlayButtonSelected) {
                 HStack {
                     Image(systemName: isPlayingThisAlbum ? "pause.fill" : "play.fill")
                     Text(isPlayingThisAlbum ? "Pause" : "Play")
                 }
-                .frame(maxWidth: .infinity, maxHeight: 20)
-            }.font(.title3.bold())
+                .frame(maxWidth: .infinity, maxHeight: 18)
+            }.font(.body.bold())
                 .foregroundColor(self.buttonLabelColor)
-                .padding()
+                .padding(15)
                 .background(self.buttonBackgroundColor.cornerRadius(8))
                 .disabled(isPlayButtonDisabled)
                 .animation(.easeInOut(duration: 0.1), value: isPlayingThisAlbum)
-
 //            if shouldOfferSubscription {
 //                subscriptionOfferButton
 //            }
+
+            // Add to library button (I really want an Open in Apple Music button instead...)
+//            Button(action: {}) {
+//                HStack {
+//                    Image(systemName: (album.libraryAddedDate != nil) ? "checkmark" : "plus")
+//                    Text((album.libraryAddedDate != nil) ? "Added" : "Add to Library")
+//                }
+//                .frame(maxWidth: .infinity, maxHeight: 18)
+//            }.font(.body.bold())
+//                .foregroundColor(self.buttonLabelColor)
+//                .padding(15)
+//                .background(self.buttonBackgroundColor.cornerRadius(8))
+//                .animation(.easeInOut(duration: 0.1), value: album.libraryAddedDate != nil)
         }
     }
 
@@ -125,48 +155,15 @@ struct AlbumCardView: View {
     private func beginPlaying() {
         Task {
             do {
+                // Try playing with the system music player
                 try await player.play()
-                nowPlayingId = playbackId
+                // Mute previews now something is actually playing
+                previewMuted = true
+                // Update the shared state for which item is playing
+                nowPlayingIndex = pageIndex
             } catch {
                 print("Failed to prepare to play with error: \(error).")
             }
-        }
-    }
-
-    // MARK: - Preview playback
-
-    @State private var previewUrlStrings: [String]?
-
-    func fetchPreviewAssets() async {
-        do {
-            let fullAlbum = try await album.with(.tracks)
-            if let tracks = fullAlbum.tracks {
-                previewUrlStrings = tracks.compactMap {
-                    $0.previewAssets?.first?.url?.absoluteString
-                }
-            }
-        } catch {
-            print("Failed to load album tracks")
-        }
-    }
-
-    func startPreviewQueue() async {
-        print("Previewing: \(album.title)")
-        // Fetch previews if we haven't already
-        if previewUrlStrings == nil {
-            await fetchPreviewAssets()
-        }
-
-        previewPlayer.pause()
-        previewPlayer.removeAllItems()
-
-        if let previewUrlStrings = previewUrlStrings {
-            for urlString in previewUrlStrings {
-                if let url = URL(string: urlString) {
-                    previewPlayer.insert(AVPlayerItem(url: url), after: nil)
-                }
-            }
-            previewPlayer.play()
         }
     }
 
@@ -192,15 +189,35 @@ struct AlbumCardView: View {
                             .aspectRatio(1, contentMode: .fit)
                     }
                 )
-                .frame(maxWidth: .infinity)
-//                .task { // Async task to run when artwork first appears
-//                    await fetchPreviewAssets()
-//                }
+                .frame(width: geometry.size.width)
+                .overlay(alignment: .topTrailing) {
+                    Button(action: {
+                        previewMuted = !previewMuted
+                    }) {
+                        Image(systemName: previewMuted ? "speaker.slash.fill" : "speaker.fill")
+                            .padding(8)
+                            .background(.black.opacity(0.5))
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                    }.padding(12)
+                }
 
                 // Everything other than album art
                 VStack(alignment: .leading, spacing: 16.0) {
                     // OPTIONAL: Initial spacer to push item info down
                     Spacer()
+
+                    // Recommendation info
+                    VStack(alignment: .leading, spacing: 8.0) {
+                        if let recommendationTitle = recommendationTitle {
+                            Text(recommendationTitle)
+                                .font(Font.system(.caption))
+                        }
+                        if let recommendationReason = recommendationReason {
+                            Text(recommendationReason)
+                                .font(.system(.caption2))
+                        }
+                    }.foregroundColor(self.secondaryTextColor)
 
                     // Item info
                     VStack(alignment: .leading, spacing: 8.0) {
@@ -218,95 +235,214 @@ struct AlbumCardView: View {
                     // Item card - Full width and horizontally centered
                     VStack(spacing: 16.0) {
                         // Play button
-                        playButton.task {
-                            await startPreviewQueue()
-                        }
+                        primaryButtons
                     }.frame(maxWidth: .infinity, alignment: .center)
                 }
                 // Padding, for a e s t h e t i c
                 .padding([.horizontal, .bottom], 20.0)
                 // Lock height as the difference between the artwork height and the full available height
                 .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
+                // Apply a gradient background to the bottom half of the card
+                .background(Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor))
             }
-            .background(Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor))
-            .cornerRadius(12.0)
+            .cornerRadius(cardCornerRadius)
             .overlay( /// Rounded border
-                RoundedRectangle(cornerRadius: 12.0).stroke(Color(UIColor.systemGray4), lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: cardCornerRadius).stroke(Color(UIColor.systemGray4), lineWidth: 0.5)
             )
             .shadow(radius: 16.0)
         }
     }
 }
 
-struct SongsViewModel: View {
-    @State var items: MusicItemCollection<MusicPersonalRecommendation> = []
-    @State var nowPlayingId: String? = nil
+struct FeedItem: Identifiable, Hashable {
+    var id = UUID()
+    let recommendationReason: String?
+    let recommendationTitle: String?
+    let album: Album
+}
 
+struct SongsViewModel: View {
+    @State var flatItems: [FeedItem] = []
+
+    @State var nowPlayingIndex: Int? = nil
+    @State var currentIndex: Int = 0
+
+    @State var previewMuted: Bool = true
     let previewPlayer: AVQueuePlayer = .init()
+
+    // Track if the user has changed page yet (used to auto-unmute)
+    @State var firstPageMove: Bool = true
 
     let itemPadding = 40.0
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollViewReader { reader in
-                SnappingScrollView(.vertical, decelerationRate: .fast, showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        ForEach(items) { reccommendation in
-                            ForEach(reccommendation.albums) { album in
-                                let itemId = reccommendation.id.rawValue + album.id.rawValue
-                                AlbumCardView(album: album, playbackId: itemId, nowPlayingId: $nowPlayingId, previewPlayer: previewPlayer)
-                                    // Pad and set scroll anchor
-                                    // NOTE: I have no idea why this weird layout works, but it does
-                                    .padding(.bottom, itemPadding - 1)
-                                    .scrollSnappingAnchor(.bounds).id(itemId)
-                                    .padding(.bottom, 1)
-                                    // Set the total frame height to 90% of the viewport (used by AlbumCardView for child sizing)
-                                    .frame(maxWidth: .infinity, minHeight: geometry.size.height * 0.9)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            reader.scrollTo(itemId, anchor: .top)
-                                        }
-                                    }
+            PageViewReader { proxy in
+                VPageView(alignment: .top, pageHeight: geometry.size.height * 0.9, spacing: 24, index: $currentIndex) {
+                    ForEach(Array(flatItems.enumerated()), id: \.element) { index, item in
+                        AlbumCardView(
+                            album: item.album,
+                            pageIndex: index,
+                            recommendationTitle: item.recommendationTitle,
+                            recommendationReason: item.recommendationReason,
+                            nowPlayingIndex: $nowPlayingIndex,
+                            currentIndex: $currentIndex,
+                            previewMuted: $previewMuted
+                        )
+                        .onTapGesture {
+                            // Tapping before first page change will unmute
+                            initiatePreviews()
+                            // Tapping will move to the tapped page
+                            withAnimation {
+                                proxy.moveTo(index)
                             }
                         }
-                    }.padding([.horizontal], 20.0)
-                }.onAppear {
-                    fetchMusic()
+                    }
+                }
+                .padding(.horizontal, 12)
+                // When page changes
+                .onChange(of: currentIndex, perform: { newIndex in
+                    // If it's the first time the user has changed page, unmute
+                    initiatePreviews()
+                    Task {
+                        if !previewMuted {
+                            await startPreviewFor(item: flatItems[newIndex].album)
+                        }
+                    }
+                })
+                // When preview mute changes
+                .onChange(of: previewMuted, perform: { newPreviewMuted in
+                    Task {
+                        if newPreviewMuted {
+                            previewPlayer.pause()
+                        } else {
+                            await startPreviewFor(item: flatItems[currentIndex].album)
+                        }
+                        previewPlayer.isMuted = newPreviewMuted
+                    }
+                })
+                // On load, fetch music and start playing
+                .task {
+                    await fetchMusic()
+                    if !previewMuted {
+                        await startPreviewFor(item: flatItems[currentIndex].album)
+                    }
                 }
             }
         }
     }
 
-    private let request: MusicPersonalRecommendationsRequest = {
-        var request = MusicPersonalRecommendationsRequest()
+    private func initiatePreviews() {
+        if firstPageMove {
+            firstPageMove = false
+            previewMuted = false
+        }
+    }
 
-        // request.limit = 5
-        // request.offset = 0
+    private func startPreviewQueue(previewUrlStrings: [String]) {
+        previewPlayer.pause()
+        previewPlayer.removeAllItems()
 
-        return request
-    }()
-
-    private func fetchMusic() {
-        Task {
-            // Request permission
-            // TODO: Move to a login screen
-            let status = await MusicAuthorization.request()
-
-            switch status {
-            case .authorized:
-                // Request -> Response
-                do {
-                    let result = try await request.response()
-
-                    self.items = result.recommendations
-                } catch {
-                    print(String(describing: error))
-                }
-
-            // Assign songs
-            default:
-                break
+        for urlString in previewUrlStrings {
+            if let url = URL(string: urlString) {
+                previewPlayer.insert(AVPlayerItem(url: url), after: nil)
             }
+        }
+        previewPlayer.play()
+    }
+
+    private func startPreviewFor(item: Album) async {
+        do {
+            let fullAlbum = try await item.with(.tracks)
+            if let tracks = fullAlbum.tracks {
+                let previewUrlStrings = tracks.compactMap {
+                    $0.previewAssets?.first?.url?.absoluteString
+                }
+                startPreviewQueue(previewUrlStrings: previewUrlStrings)
+            }
+        } catch {
+            print("Failed to load album tracks")
+        }
+    }
+
+    private func fetchMusic() async {
+        // Request permission
+        // TODO: Move to a login screen
+        let status = await MusicAuthorization.request()
+
+        switch status {
+        case .authorized:
+            // Request -> Response
+            do {
+                var request = MusicPersonalRecommendationsRequest()
+                // TODO: Add loading extra items but running this function again with a new offset
+                request.limit = 25
+                request.offset = 0
+
+                let result = try await request.response()
+                flatItems = flattenRecommendations(recommendations: result.recommendations)
+            } catch {
+                print(String(describing: error))
+            }
+
+        // Assign songs
+        default:
+            break
+        }
+    }
+
+    private func flattenRecommendations(
+        recommendations: MusicItemCollection<MusicPersonalRecommendation>,
+        simple: Bool = false,
+        maxGroupSize: Int = 3
+    ) -> [FeedItem] {
+        if simple {
+            return recommendations.flatMap { recommendation in
+                recommendation.albums.map { album in
+                    FeedItem(
+                        recommendationReason: recommendation.reason,
+                        recommendationTitle: recommendation.title,
+                        album: album
+                    )
+                }
+            }
+        } else {
+            // Items to show at the top of the feed
+            var items: [FeedItem] = []
+            // Spares to put at the end of the feed
+            var spares: [FeedItem] = []
+
+            // For each recommendation group
+            for recommendation in recommendations {
+                // Keep count of how many items in this recommendation
+                var groupCount = 0
+                // For each recommendation in the group
+                for album in recommendation.albums {
+                    // Iterate the group counter
+                    groupCount += 1
+
+                    // Create a feed item
+                    let item = FeedItem(
+                        recommendationReason: recommendation.reason,
+                        recommendationTitle: recommendation.title,
+                        album: album
+                    )
+                    // If we've not hit the max group size
+                    if groupCount <= maxGroupSize {
+                        // Add the item to the top of the feed
+                        items.append(item)
+                    } else {
+                        // Add the item to the spares at the bottom
+                        spares.append(item)
+                    }
+                }
+            }
+
+            // Shuffle spares
+            spares.shuffle()
+
+            // Join spare items to the bottom of the feed
+            return items + spares
         }
     }
 }

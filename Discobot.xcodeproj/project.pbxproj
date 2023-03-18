@@ -13,10 +13,11 @@
 		5DCDE0E629BCF3AB00AA3287 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DCDE0E529BCF3AB00AA3287 /* Preview Assets.xcassets */; };
 		5DCDE0EE29BCF3E300AA3287 /* MusicKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCDE0ED29BCF3E300AA3287 /* MusicKit.framework */; };
 		5DCDE0F229BCF5A200AA3287 /* SongsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE0F129BCF5A200AA3287 /* SongsViewModel.swift */; };
-		5DCDE0F829BE367A00AA3287 /* SwiftUISnappingScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 5DCDE0F729BE367A00AA3287 /* SwiftUISnappingScrollView */; };
+		5DCDE10729C0F73500AA3287 /* SwiftUIPageView in Frameworks */ = {isa = PBXBuildFile; productRef = 5DCDE10629C0F73500AA3287 /* SwiftUIPageView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5D92622729C23A7E00C9DD2C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5DCDE0DB29BCF3AA00AA3287 /* Discobot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Discobot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DCDE0DE29BCF3AA00AA3287 /* DiscobotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscobotApp.swift; sourceTree = "<group>"; };
 		5DCDE0E029BCF3AA00AA3287 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -32,7 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5DCDE0F829BE367A00AA3287 /* SwiftUISnappingScrollView in Frameworks */,
+				5DCDE10729C0F73500AA3287 /* SwiftUIPageView in Frameworks */,
 				5DCDE0EE29BCF3E300AA3287 /* MusicKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -43,6 +44,7 @@
 		5DCDE0D229BCF3AA00AA3287 = {
 			isa = PBXGroup;
 			children = (
+				5D92622729C23A7E00C9DD2C /* README.md */,
 				5DCDE0DD29BCF3AA00AA3287 /* Discobot */,
 				5DCDE0DC29BCF3AA00AA3287 /* Products */,
 				5DCDE0EC29BCF3E300AA3287 /* Frameworks */,
@@ -103,7 +105,7 @@
 			);
 			name = Discobot;
 			packageProductDependencies = (
-				5DCDE0F729BE367A00AA3287 /* SwiftUISnappingScrollView */,
+				5DCDE10629C0F73500AA3287 /* SwiftUIPageView */,
 			);
 			productName = Discobot;
 			productReference = 5DCDE0DB29BCF3AA00AA3287 /* Discobot.app */;
@@ -134,7 +136,7 @@
 			);
 			mainGroup = 5DCDE0D229BCF3AA00AA3287;
 			packageReferences = (
-				5DCDE0F629BE367A00AA3287 /* XCRemoteSwiftPackageReference "SwiftUISnappingScrollView" */,
+				5DCDE10529C0F73500AA3287 /* XCRemoteSwiftPackageReference "SwiftUIPageView" */,
 			);
 			productRefGroup = 5DCDE0DC29BCF3AA00AA3287 /* Products */;
 			projectDirPath = "";
@@ -369,9 +371,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		5DCDE0F629BE367A00AA3287 /* XCRemoteSwiftPackageReference "SwiftUISnappingScrollView" */ = {
+		5DCDE10529C0F73500AA3287 /* XCRemoteSwiftPackageReference "SwiftUIPageView" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ciaranrobrien/SwiftUISnappingScrollView";
+			repositoryURL = "https://github.com/jtc42/SwiftUIPageView";
 			requirement = {
 				branch = main;
 				kind = branch;
@@ -380,10 +382,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		5DCDE0F729BE367A00AA3287 /* SwiftUISnappingScrollView */ = {
+		5DCDE10629C0F73500AA3287 /* SwiftUIPageView */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 5DCDE0F629BE367A00AA3287 /* XCRemoteSwiftPackageReference "SwiftUISnappingScrollView" */;
-			productName = SwiftUISnappingScrollView;
+			package = 5DCDE10529C0F73500AA3287 /* XCRemoteSwiftPackageReference "SwiftUIPageView" */;
+			productName = SwiftUIPageView;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
