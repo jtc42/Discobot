@@ -60,6 +60,12 @@ struct AlbumCardView: View {
         return Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
     }
 
+    // MARK: - Display state
+
+    var isNearby: Bool {
+        return pageIndex == currentIndex || pageIndex == currentIndex + 1 || pageIndex == currentIndex - 1
+    }
+
     // MARK: - System music playback
 
     /// The MusicKit player to use for Apple Music playback.
@@ -91,7 +97,22 @@ struct AlbumCardView: View {
 
     /// A declaration of the Play/Pause button, and (if appropriate) the Join button, side by side.
     private var primaryButtons: some View {
-        VStack {
+        HStack {
+            // Open in Apple Music button
+            Button(action: {
+                if let url = album.url {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            }) {
+                HStack {
+                    Image(systemName: "arrow.up.forward.app")
+                    Text("Open")
+                }
+                .frame(maxWidth: .infinity, maxHeight: 18)
+            }
+            .padding(15)
+            .background(self.buttonBackgroundColor.cornerRadius(8))
+
             // Play button
             Button(action: handlePlayButtonSelected) {
                 HStack {
@@ -99,18 +120,17 @@ struct AlbumCardView: View {
                     Text(isPlayingThisAlbum ? "Pause" : "Play")
                 }
                 .frame(maxWidth: .infinity, maxHeight: 18)
-            }.font(.body.bold())
-                .foregroundColor(self.buttonLabelColor)
-                .padding(15)
-                .background(self.buttonBackgroundColor.cornerRadius(8))
-                .disabled(isPlayButtonDisabled)
-                .animation(.easeInOut(duration: 0.1), value: isPlayingThisAlbum)
+            }
+            .padding(15)
+            .background(self.buttonBackgroundColor.cornerRadius(8))
+            .disabled(isPlayButtonDisabled)
+            .animation(.easeInOut(duration: 0.1), value: isPlayingThisAlbum)
 //            if shouldOfferSubscription {
 //                subscriptionOfferButton
 //            }
 
             // Add to library button (I really want an Open in Apple Music button instead...)
-//            Button(action: {}) {
+//            Button(action: { }) {
 //                HStack {
 //                    Image(systemName: (album.libraryAddedDate != nil) ? "checkmark" : "plus")
 //                    Text((album.libraryAddedDate != nil) ? "Added" : "Add to Library")
@@ -121,7 +141,7 @@ struct AlbumCardView: View {
 //                .padding(15)
 //                .background(self.buttonBackgroundColor.cornerRadius(8))
 //                .animation(.easeInOut(duration: 0.1), value: album.libraryAddedDate != nil)
-        }
+        }.font(.body.bold()).foregroundColor(self.buttonLabelColor)
     }
 
     /// The action to perform when the user taps the Play/Pause button.
@@ -234,8 +254,11 @@ struct AlbumCardView: View {
 
                     // Item card - Full width and horizontally centered
                     VStack(spacing: 16.0) {
-                        // Play button
-                        primaryButtons
+                        // Buttons seem to make the PageView scroll lag like heck,
+                        // so only render them if the page is in view
+                        if isNearby {
+                            primaryButtons
+                        }
                     }.frame(maxWidth: .infinity, alignment: .center)
                 }
                 // Padding, for a e s t h e t i c
