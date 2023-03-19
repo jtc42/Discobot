@@ -11,6 +11,7 @@
 // TODO: Show reccommendation.title on card somewhere
 
 import AVFoundation
+import Combine
 import MusicKit
 import SwiftUI
 import SwiftUIPageView
@@ -23,8 +24,10 @@ struct FeedItem: Identifiable, Hashable {
 }
 
 struct FeedView: View {
+    @State var musicAuthorizationStatus: MusicAuthorization.Status?
+
     /// If the first request is currently loading
-    @State var isLoading: Bool = false
+    @State var isLoading: Bool = true
     /// If the request resulted in an error
     @State var isError: Bool = false
 
@@ -49,9 +52,8 @@ struct FeedView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        // TODO: Fetch music from on a new parent view
         VStack {
-            if isLoading {
+            if isLoading || musicAuthorizationStatus == nil {
                 ProgressView().progressViewStyle(CircularProgressViewStyle())
             } else if isError {
                 VStack(spacing: 10.0) {
@@ -68,13 +70,18 @@ struct FeedView: View {
                 mainFeedView
             }
         }
-        // On load, fetch music and start playing
-        .task {
-            await fetchMusic()
-            if !previewMuted {
-                await startPreviewFor(item: flatItems[currentIndex].album)
+        // As soon as we know the users auth status, decide if we should fetch content
+        .onReceive(WelcomeView.PresentationCoordinator.shared.$musicAuthorizationStatus, perform: { status in
+            musicAuthorizationStatus = status
+            if musicAuthorizationStatus == .authorized {
+                Task {
+                    await fetchMusic()
+                    if !previewMuted {
+                        await startPreviewFor(item: flatItems[currentIndex].album)
+                    }
+                }
             }
-        }
+        })
     }
 
     private var mainFeedView: some View {
@@ -162,7 +169,7 @@ struct FeedView: View {
 
     private func fetchMusic() async {
         // Request permission
-        // TODO: Handle auth in parent view
+        // TODO: Handle MusicAuthorization
         let status = await MusicAuthorization.request()
 
         switch status {

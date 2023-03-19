@@ -13,11 +13,14 @@ struct ContentView: View {
             FeedView().tabItem {
                 Label("Feed", systemImage: "play.square.stack")
             }
-        }.onAppear {
+        }
+        .onAppear {
             let tabBarAppearance = UITabBarAppearance()
             tabBarAppearance.configureWithDefaultBackground()
             UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         } // Explicitly force background, see https://stackoverflow.com/questions/70867033/ios-tabview-in-swiftui-loses-background-when-content-of-the-navigationview-is
+        // Display the welcome view when appropriate.
+        .welcomeSheet()
     }
 }
 

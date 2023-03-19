@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		5D92622929C71DF900C9DD2C /* AlbumCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622829C71DF900C9DD2C /* AlbumCardView.swift */; };
+		5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */; };
+		5D92622E29C75B7700C9DD2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D92623029C75B7700C9DD2C /* Localizable.strings */; };
 		5DCDE0DF29BCF3AA00AA3287 /* DiscobotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE0DE29BCF3AA00AA3287 /* DiscobotApp.swift */; };
 		5DCDE0E129BCF3AA00AA3287 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE0E029BCF3AA00AA3287 /* ContentView.swift */; };
 		5DCDE0E329BCF3AB00AA3287 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DCDE0E229BCF3AB00AA3287 /* Assets.xcassets */; };
@@ -20,6 +22,8 @@
 /* Begin PBXFileReference section */
 		5D92622729C23A7E00C9DD2C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5D92622829C71DF900C9DD2C /* AlbumCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumCardView.swift; sourceTree = "<group>"; };
+		5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		5D92622F29C75B7700C9DD2C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5DCDE0DB29BCF3AA00AA3287 /* Discobot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Discobot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DCDE0DE29BCF3AA00AA3287 /* DiscobotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscobotApp.swift; sourceTree = "<group>"; };
 		5DCDE0E029BCF3AA00AA3287 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -64,6 +68,7 @@
 		5DCDE0DD29BCF3AA00AA3287 /* Discobot */ = {
 			isa = PBXGroup;
 			children = (
+				5D92623029C75B7700C9DD2C /* Localizable.strings */,
 				5DCDE0F329BCFEFB00AA3287 /* Info.plist */,
 				5DCDE0DE29BCF3AA00AA3287 /* DiscobotApp.swift */,
 				5DCDE0E029BCF3AA00AA3287 /* ContentView.swift */,
@@ -71,6 +76,7 @@
 				5DCDE0E229BCF3AB00AA3287 /* Assets.xcassets */,
 				5DCDE0E429BCF3AB00AA3287 /* Preview Content */,
 				5D92622829C71DF900C9DD2C /* AlbumCardView.swift */,
+				5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */,
 			);
 			path = Discobot;
 			sourceTree = "<group>";
@@ -156,6 +162,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5DCDE0E629BCF3AB00AA3287 /* Preview Assets.xcassets in Resources */,
+				5D92622E29C75B7700C9DD2C /* Localizable.strings in Resources */,
 				5DCDE0E329BCF3AB00AA3287 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -167,6 +174,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */,
 				5D92622929C71DF900C9DD2C /* AlbumCardView.swift in Sources */,
 				5DCDE0F229BCF5A200AA3287 /* FeedView.swift in Sources */,
 				5DCDE0E129BCF3AA00AA3287 /* ContentView.swift in Sources */,
@@ -175,6 +183,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		5D92623029C75B7700C9DD2C /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5D92622F29C75B7700C9DD2C /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		5DCDE0E729BCF3AB00AA3287 /* Debug */ = {

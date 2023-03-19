@@ -1,0 +1,19 @@
+/* 
+  Localizable.strings
+  Discobot
+
+  Created by Joel Collins on 19/03/2023.
+  
+*/
+
+// Generics
+"title" = "Discobot";
+
+"continue" = "Continue";
+"openSettings" = "Open Settings";
+
+// Welcome page
+
+"musicAuthorizationStatus" = "Discobot uses Apple Music to find and play recommendations.";
+"musicAuthorizationStatus.restricted" = "Discobot cannot be used on this device because usage of Apple Music is restricted.";
+"musicAuthorizationStatus.denied" = "Please grant Discobot access to Apple Music in Settings";
