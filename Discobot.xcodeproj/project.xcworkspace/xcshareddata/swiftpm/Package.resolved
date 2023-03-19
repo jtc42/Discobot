@@ -10,6 +10,24 @@
       }
     },
     {
+      "identity" : "skeletonui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/CSolanaM/SkeletonUI.git",
+      "state" : {
+        "revision" : "be1116a61861ab4cf0b5270c24be2c7a5e05de4f",
+        "version" : "1.0.11"
+      }
+    },
+    {
+      "identity" : "swift-snapshot-testing",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
+      "state" : {
+        "revision" : "cef5b3f6f11781dd4591bdd1dd0a3d22bd609334",
+        "version" : "1.11.0"
+      }
+    },
+    {
       "identity" : "swiftuipageview",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jtc42/SwiftUIPageView",

@@ -6,7 +6,9 @@
 //
 
 import AVFoundation
+import FluidGradient
 import MusicKit
+import SkeletonUI
 import SwiftUI
 import SwiftUIPageView
 
@@ -59,8 +61,12 @@ struct AlbumCardView: View {
 
     // MARK: - Colours, UI etc
 
+    private var cardCgColor: CGColor {
+        return album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor
+    }
+
     var cardColour: Color {
-        return Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
+        return Color(cardCgColor)
     }
 
     var primaryTextColor: Color {
@@ -77,6 +83,20 @@ struct AlbumCardView: View {
 
     var buttonLabelColor: Color {
         return Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
+    }
+
+    private var backgroundGradientColors: [Color] {
+        let colors: [UIColor] =
+            [
+                UIColor(cgColor: cardCgColor).shiftHSB(hueBy: 0.12, saturationBy: 0.2, brightnessBy: -0.1),
+                UIColor(cgColor: cardCgColor).shiftHSB(hueBy: 0.05, saturationBy: -0.1, brightnessBy: 0.0),
+                UIColor(cgColor: cardCgColor).shiftHSB(hueBy: -0.05, saturationBy: 0.1, brightnessBy: 0.0),
+                UIColor(cgColor: cardCgColor).shiftHSB(hueBy: -0.12, saturationBy: 0.2, brightnessBy: 0.1),
+            ]
+
+        return colors.map { uiColor in
+            Color(cgColor: uiColor.cgColor)
+        }
     }
 
     // MARK: - Display state
@@ -198,14 +218,13 @@ struct AlbumCardView: View {
                         image.resizable().aspectRatio(contentMode: .fit)
                     },
                     placeholder: {
-                        Image(systemName: "a.square") // TODO: Replace with a better placeholder
-                            // Make placeholder resizable
-                            .resizable()
-                            // Force to a square, so cards with placeholders are roughly the right size
-                            .aspectRatio(1, contentMode: .fit)
+                        Rectangle()
+                            .fill(cardColour)
+                            .frame(width: geometry.size.width, height: geometry.size.width)
                     }
                 )
                 .frame(width: geometry.size.width)
+                .background(cardColour)
                 .overlay(alignment: .topTrailing) {
                     Button(action: {
                         previewMuted = !previewMuted
@@ -219,52 +238,60 @@ struct AlbumCardView: View {
                 }
 
                 // Everything other than album art
-                VStack(alignment: .leading, spacing: 16.0) {
-                    // AlbumAddButton(album: album)
-
-                    // OPTIONAL: Initial spacer to push item info down
-                    Spacer()
-
-                    // Recommendation info
-                    VStack(alignment: .leading, spacing: 8.0) {
-                        if let recommendationTitle = recommendationTitle {
-                            Text(recommendationTitle)
-                                .font(Font.system(.caption))
-                        }
-                        if let recommendationReason = recommendationReason {
-                            Text(recommendationReason)
-                                .font(.system(.caption2))
-                        }
-                    }.foregroundColor(self.secondaryTextColor)
-
-                    // Item info
-                    VStack(alignment: .leading, spacing: 8.0) {
-                        Text(album.title)
-                            .font(Font.system(.headline))
-                        Text(album.artistName)
-                            .font(.system(.subheadline))
+                ZStack {
+                    // Only show gradient if page is in view
+                    if isNearby {
+                        FluidGradient(blobs: self.backgroundGradientColors,
+                                      // Faster animation if this card is active and the preview is unmuted
+                                      speed: currentIndex == pageIndex && !previewMuted ? 0.5 : 0.1,
+                                      blur: 0.85).ignoresSafeArea()
                     }
-                    .foregroundColor(self.primaryTextColor)
-                    .padding(.top, 8.0)
 
-                    // Push all remaining content to the bottom of the available space
-                    Spacer()
+                    VStack(alignment: .leading, spacing: 16.0) {
+                        // Initial spacer to push item info down
+                        Spacer()
 
-                    // Item card - Full width and horizontally centered
-                    VStack(spacing: 16.0) {
-                        // Buttons seem to make the PageView scroll lag like heck,
-                        // so only render them if the page is in view
-                        if isNearby {
-                            primaryButtons
+                        // Recommendation info
+                        VStack(alignment: .leading, spacing: 8.0) {
+                            if let recommendationTitle = recommendationTitle {
+                                Text(recommendationTitle)
+                                    .font(Font.system(.caption))
+                            }
+                            if let recommendationReason = recommendationReason {
+                                Text(recommendationReason)
+                                    .font(.system(.caption2))
+                            }
+                        }.foregroundColor(self.secondaryTextColor)
+
+                        // Item info
+                        VStack(alignment: .leading, spacing: 8.0) {
+                            Text(album.title)
+                                .font(Font.system(.headline))
+                            Text(album.artistName)
+                                .font(.system(.subheadline))
                         }
-                    }.frame(maxWidth: .infinity, alignment: .center)
+                        .foregroundColor(self.primaryTextColor)
+                        .padding(.top, 8.0)
+
+                        // Push all remaining content to the bottom of the available space
+                        Spacer()
+
+                        // Item card - Full width and horizontally centered
+                        VStack(spacing: 16.0) {
+                            // Buttons seem to make the PageView scroll lag like heck,
+                            // so only render them if the page is in view
+                            if isNearby {
+                                primaryButtons
+                            }
+                        }.frame(maxWidth: .infinity, alignment: .center)
+                    }
+                    // Padding, for a e s t h e t i c
+                    .padding([.horizontal, .bottom], 20.0)
                 }
-                // Padding, for a e s t h e t i c
-                .padding([.horizontal, .bottom], 20.0)
                 // Lock height as the difference between the artwork height and the full available height
                 .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
                 // Apply a gradient background to the bottom half of the card
-                .background(Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor))
+                .background(cardColour)
             }
             .cornerRadius(cardCornerRadius)
             .overlay( /// Rounded border

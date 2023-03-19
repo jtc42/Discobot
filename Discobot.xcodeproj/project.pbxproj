@@ -12,6 +12,7 @@
 		5D92622E29C75B7700C9DD2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D92623029C75B7700C9DD2C /* Localizable.strings */; };
 		5D92623629C76CA200C9DD2C /* FluidGradient in Frameworks */ = {isa = PBXBuildFile; productRef = 5D92623529C76CA200C9DD2C /* FluidGradient */; };
 		5D92623929C76F4F00C9DD2C /* UIColor+ShiftHSB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92623829C76F4F00C9DD2C /* UIColor+ShiftHSB.swift */; };
+		5D92623C29C7764400C9DD2C /* SkeletonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5D92623B29C7764400C9DD2C /* SkeletonUI */; };
 		5DCDE0DF29BCF3AA00AA3287 /* DiscobotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE0DE29BCF3AA00AA3287 /* DiscobotApp.swift */; };
 		5DCDE0E129BCF3AA00AA3287 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE0E029BCF3AA00AA3287 /* ContentView.swift */; };
 		5DCDE0E329BCF3AB00AA3287 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DCDE0E229BCF3AB00AA3287 /* Assets.xcassets */; };
@@ -43,6 +44,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5DCDE10729C0F73500AA3287 /* SwiftUIPageView in Frameworks */,
+				5D92623C29C7764400C9DD2C /* SkeletonUI in Frameworks */,
 				5D92623629C76CA200C9DD2C /* FluidGradient in Frameworks */,
 				5DCDE0EE29BCF3E300AA3287 /* MusicKit.framework in Frameworks */,
 			);
@@ -129,6 +131,7 @@
 			packageProductDependencies = (
 				5DCDE10629C0F73500AA3287 /* SwiftUIPageView */,
 				5D92623529C76CA200C9DD2C /* FluidGradient */,
+				5D92623B29C7764400C9DD2C /* SkeletonUI */,
 			);
 			productName = Discobot;
 			productReference = 5DCDE0DB29BCF3AA00AA3287 /* Discobot.app */;
@@ -161,6 +164,7 @@
 			packageReferences = (
 				5DCDE10529C0F73500AA3287 /* XCRemoteSwiftPackageReference "SwiftUIPageView" */,
 				5D92623429C76CA200C9DD2C /* XCRemoteSwiftPackageReference "FluidGradient" */,
+				5D92623A29C7764400C9DD2C /* XCRemoteSwiftPackageReference "SkeletonUI" */,
 			);
 			productRefGroup = 5DCDE0DC29BCF3AA00AA3287 /* Products */;
 			projectDirPath = "";
@@ -418,6 +422,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		5D92623A29C7764400C9DD2C /* XCRemoteSwiftPackageReference "SkeletonUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CSolanaM/SkeletonUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		5DCDE10529C0F73500AA3287 /* XCRemoteSwiftPackageReference "SwiftUIPageView" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/jtc42/SwiftUIPageView";
@@ -433,6 +445,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5D92623429C76CA200C9DD2C /* XCRemoteSwiftPackageReference "FluidGradient" */;
 			productName = FluidGradient;
+		};
+		5D92623B29C7764400C9DD2C /* SkeletonUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D92623A29C7764400C9DD2C /* XCRemoteSwiftPackageReference "SkeletonUI" */;
+			productName = SkeletonUI;
 		};
 		5DCDE10629C0F73500AA3287 /* SwiftUIPageView */ = {
 			isa = XCSwiftPackageProductDependency;
