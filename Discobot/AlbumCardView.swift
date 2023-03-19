@@ -39,6 +39,10 @@ struct AlbumAddButton: View {
 }
 
 struct AlbumCardView: View {
+    // MARK: - Environment
+
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     // MARK: - Initialisation
 
     /// Album object for this view instance
@@ -229,7 +233,8 @@ struct AlbumCardView: View {
                     Button(action: {
                         previewMuted = !previewMuted
                     }) {
-                        Image(systemName: previewMuted ? "speaker.slash.fill" : "speaker.fill")
+                        Image(systemName: previewMuted ? "speaker.slash.fill" : "speaker.wave.1.fill")
+                            .frame(width: 20, height: 20)
                             .padding(8)
                             .background(.black.opacity(0.5))
                             .foregroundColor(.white)
@@ -240,7 +245,7 @@ struct AlbumCardView: View {
                 // Everything other than album art
                 ZStack {
                     // Only show gradient if page is in view
-                    if isNearby {
+                    if isNearby && !reduceMotion {
                         FluidGradient(blobs: self.backgroundGradientColors,
                                       // Faster animation if this card is active and the preview is unmuted
                                       speed: currentIndex == pageIndex && !previewMuted ? 0.4 : 0.1,
