@@ -243,7 +243,7 @@ struct AlbumCardView: View {
                     if isNearby {
                         FluidGradient(blobs: self.backgroundGradientColors,
                                       // Faster animation if this card is active and the preview is unmuted
-                                      speed: currentIndex == pageIndex && !previewMuted ? 0.5 : 0.1,
+                                      speed: currentIndex == pageIndex && !previewMuted ? 0.4 : 0.1,
                                       blur: 0.85).ignoresSafeArea()
                     }
 
