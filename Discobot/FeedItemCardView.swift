@@ -14,7 +14,7 @@ import SwiftUIPageView
 
 let cardCornerRadius = 20.0
 
-struct AlbumCardView: View {
+struct FeedItemCardView: View {
     // MARK: - Environment
 
     @Environment(\.accessibilityReduceMotion) var reduceMotion
@@ -22,7 +22,7 @@ struct AlbumCardView: View {
     // MARK: - Initialisation
 
     /// Album object for this view instance
-    var album: Album
+    var item: MusicPersonalRecommendation.Item
     /// Page index of this instance
     let pageIndex: Int
 
@@ -42,7 +42,7 @@ struct AlbumCardView: View {
     // MARK: - Colours, UI etc
 
     private var cardCgColor: CGColor {
-        return album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor
+        return item.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor
     }
 
     var cardColour: Color {
@@ -50,19 +50,19 @@ struct AlbumCardView: View {
     }
 
     var primaryTextColor: Color {
-        return Color(album.artwork?.primaryTextColor ?? UIColor.black.cgColor)
+        return Color(item.artwork?.primaryTextColor ?? UIColor.black.cgColor)
     }
 
     var secondaryTextColor: Color {
-        return Color(album.artwork?.tertiaryTextColor ?? UIColor.gray.cgColor)
+        return Color(item.artwork?.tertiaryTextColor ?? UIColor.gray.cgColor)
     }
 
     var buttonBackgroundColor: Color {
-        return Color(album.artwork?.secondaryTextColor ?? UIColor.systemGray2.cgColor)
+        return Color(item.artwork?.secondaryTextColor ?? UIColor.systemGray2.cgColor)
     }
 
     var buttonLabelColor: Color {
-        return Color(album.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
+        return Color(item.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
     }
 
     private var backgroundGradientColors: [Color] {
@@ -112,8 +112,17 @@ struct AlbumCardView: View {
         HStack {
             // Open in Apple Music button
             Button(action: {
-                if let url = album.url {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                switch item {
+                case .album(let album):
+                    if let url = album.url {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                case .playlist(let playlist):
+                    if let url = playlist.url {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                case .station: break
+                @unknown default: break
                 }
             }) {
                 HStack {
@@ -146,8 +155,18 @@ struct AlbumCardView: View {
         if !isPlayingThisAlbum {
             // If this album isn't active
             if !nowPlayingThisAlbum {
-                // Set this album as the queue and start playing
-                player.queue = [album]
+                // Set this item as the queue and start playing
+                switch item {
+                case .album(let album):
+                    player.queue = [album]
+                case .playlist(let playlist):
+                    player.queue = [playlist]
+                case .station(let station):
+                    player.queue = [station]
+                @unknown default:
+                    break
+                }
+
                 beginPlaying()
             } else { // If this album is active, but not playing right now
                 // Resume
@@ -193,7 +212,7 @@ struct AlbumCardView: View {
                 // Get art size from the parent geometry multiplied by display scale
                 let artSize = geometry.size.width * UIScreen().scale
                 AsyncImage(
-                    url: album.artwork?.url(width: Int(artSize), height: Int(artSize)),
+                    url: item.artwork?.url(width: Int(artSize), height: Int(artSize)),
                     content: { image in
                         image.resizable().aspectRatio(contentMode: .fit)
                     },
@@ -233,22 +252,43 @@ struct AlbumCardView: View {
                         Spacer()
 
                         // Recommendation info
-                        VStack(alignment: .leading, spacing: 8.0) {
-                            if let recommendationTitle = recommendationTitle {
-                                Text(recommendationTitle)
-                                    .font(Font.system(.caption))
+                        if isNearby {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 6.0) {
+                                    if let recommendationTitle = recommendationTitle {
+                                        Text(recommendationTitle)
+                                            .font(Font.system(.caption))
+                                    }
+                                    if let recommendationReason = recommendationReason {
+                                        Text(recommendationReason)
+                                            .font(.system(.caption2))
+                                    }
+                                }.foregroundColor(self.secondaryTextColor)
+
+                                Spacer()
+
+                                VStack {
+                                    switch item {
+                                    case .album:
+                                        Text("Album")
+                                    case .playlist:
+                                        Text("Playlist")
+                                    case .station:
+                                        Text("Station")
+                                    @unknown default:
+                                        Text("Unknown")
+                                    }
+                                }
+                                .font(Font.system(.caption).bold())
+                                .foregroundColor(self.secondaryTextColor)
                             }
-                            if let recommendationReason = recommendationReason {
-                                Text(recommendationReason)
-                                    .font(.system(.caption2))
-                            }
-                        }.foregroundColor(self.secondaryTextColor)
+                        }
 
                         // Item info
                         VStack(alignment: .leading, spacing: 8.0) {
-                            Text(album.title)
+                            Text(item.title)
                                 .font(Font.system(.headline))
-                            Text(album.artistName)
+                            Text(item.subtitle)
                                 .font(.system(.subheadline))
                         }
                         .foregroundColor(self.primaryTextColor)

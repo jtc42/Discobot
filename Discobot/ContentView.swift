@@ -13,6 +13,8 @@ struct ContentView: View {
             FeedView().tabItem {
                 Label("Feed", systemImage: "play.square.stack")
             }
+            // Hide the tab bar in this tab (for now, as we only have 1 tab so it's a bit pointless)
+            .toolbar(.hidden, for: .tabBar)
         }
         .onAppear {
             let tabBarAppearance = UITabBarAppearance()
