@@ -54,14 +54,14 @@ struct FeedView: View {
             if isLoading {
                 ProgressView().progressViewStyle(CircularProgressViewStyle())
             } else if isError {
-                VStack(spacing: 8.0) {
-                    Text("Error loading recommendations").font(.caption)
+                VStack(spacing: 10.0) {
+                    Text("Error loading recommendations").font(.body)
                     Button(action: {
                         Task {
                             await fetchMusic()
                         }
                     }) {
-                        Text("Try again").font(.caption)
+                        Text("Try again").font(.body)
                     }
                 }
             } else {
