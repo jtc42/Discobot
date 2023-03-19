@@ -252,34 +252,36 @@ struct FeedItemCardView: View {
                         Spacer()
 
                         // Recommendation info
-                        HStack {
-                            VStack(alignment: .leading, spacing: 6.0) {
-                                if let recommendationTitle = recommendationTitle {
-                                    Text(recommendationTitle)
-                                        .font(Font.system(.caption))
-                                }
-                                if let recommendationReason = recommendationReason {
-                                    Text(recommendationReason)
-                                        .font(.system(.caption2))
-                                }
-                            }.foregroundColor(self.secondaryTextColor)
+                        if isNearby {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 6.0) {
+                                    if let recommendationTitle = recommendationTitle {
+                                        Text(recommendationTitle)
+                                            .font(Font.system(.caption))
+                                    }
+                                    if let recommendationReason = recommendationReason {
+                                        Text(recommendationReason)
+                                            .font(.system(.caption2))
+                                    }
+                                }.foregroundColor(self.secondaryTextColor)
 
-                            Spacer()
+                                Spacer()
 
-                            VStack {
-                                switch item {
-                                case .album:
-                                    Text("Album")
-                                case .playlist:
-                                    Text("Playlist")
-                                case .station:
-                                    Text("Station")
-                                @unknown default:
-                                    Text("Unknown")
+                                VStack {
+                                    switch item {
+                                    case .album:
+                                        Text("Album")
+                                    case .playlist:
+                                        Text("Playlist")
+                                    case .station:
+                                        Text("Station")
+                                    @unknown default:
+                                        Text("Unknown")
+                                    }
                                 }
+                                .font(Font.system(.caption).bold())
+                                .foregroundColor(self.secondaryTextColor)
                             }
-                            .font(Font.system(.caption).bold())
-                            .foregroundColor(self.secondaryTextColor)
                         }
 
                         // Item info
