@@ -189,7 +189,7 @@ struct AlbumCardView: View {
         GeometryReader { geometry in
             // Height of VStack is determined by it's children, and the height of the children
             // are in turn determined by the available height set by the frame of this view (measured by GeometryReader)
-            LazyVStack(alignment: .leading) {
+            LazyVStack(alignment: .leading, spacing: 0.0) {
                 // Get art size from the parent geometry multiplied by display scale
                 let artSize = geometry.size.width * UIScreen().scale
                 AsyncImage(
