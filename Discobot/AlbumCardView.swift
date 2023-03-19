@@ -14,30 +14,6 @@ import SwiftUIPageView
 
 let cardCornerRadius = 20.0
 
-struct AlbumAddButton: View {
-    let album: Album
-
-    var body: some View {
-        Button(action: {
-            Task {
-                do {
-                    let newAlbum = try await album.with()
-                    print(newAlbum.libraryAddedDate ?? "Not added")
-                    try await MusicLibrary.shared.add(album)
-                } catch {
-                    print("Error reloading album info")
-                }
-            }
-        }) {
-            Image(systemName: "plus")
-                .padding(8)
-                .background(.black.opacity(0.5))
-                .foregroundColor(.white)
-                .clipShape(Circle())
-        }
-    }
-}
-
 struct AlbumCardView: View {
     // MARK: - Environment
 
