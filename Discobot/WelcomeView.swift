@@ -13,44 +13,9 @@
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import FluidGradient
 import MusicKit
 import SwiftUI
-
-extension UIColor {
-    var lighterColor: UIColor {
-        return lighterColor(removeSaturation: 0.5, resultAlpha: -1)
-    }
-    
-    private func clamp(_ val: CGFloat) -> CGFloat {
-        return min(max(val, 0.0), 1.0)
-    }
-
-    func lighterColor(removeSaturation val: CGFloat, resultAlpha alpha: CGFloat) -> UIColor {
-        var h: CGFloat = 0, s: CGFloat = 0
-        var b: CGFloat = 0, a: CGFloat = 0
-
-        guard getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-        else { return self }
-        
-        return UIColor(hue: h,
-                       saturation: max(s - val, 0.0),
-                       brightness: b,
-                       alpha: alpha == -1 ? a : alpha)
-    }
-    
-    func shiftHSB(hueBy: CGFloat, saturationBy: CGFloat, brightnessBy: CGFloat) -> UIColor {
-        var h: CGFloat = 0, s: CGFloat = 0
-        var b: CGFloat = 0, a: CGFloat = 0
-
-        guard getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-        else { return self }
-
-        return UIColor(hue: clamp(h + hueBy),
-                       saturation: clamp(s + saturationBy),
-                       brightness: clamp(b + brightnessBy),
-                       alpha: a)
-    }
-}
 
 // MARK: - Welcome view
 
@@ -73,7 +38,11 @@ struct WelcomeView: View {
     /// A declaration of the UI that this view presents.
     var body: some View {
         ZStack {
-            gradient
+            FluidGradient(blobs: self.backgroundColors,
+                          speed: 0.1,
+                          blur: 0.9)
+                .ignoresSafeArea()
+                .background(Color(cgColor: primaryColor))
             VStack {
                 Text(LocalizedStringKey("title"))
                     .foregroundColor(.primary)
@@ -111,22 +80,26 @@ struct WelcomeView: View {
         }
     }
     
-    /// Constructs a gradient to use as the view background.
-    private var gradient: some View {
-        let primaryColor = CGColor(red: 130.0 / 255.0, green: 109.0 / 255.0, blue: 204.0 / 255.0, alpha: 1.0)
+    private let primaryColor = CGColor(red: 255.0 / 255.0, green: 45.0 / 255.0, blue: 85.0 / 255.0, alpha: 1.0)
+    
+    private var backgroundColors: [Color] {
+        let colors: [UIColor] =
+            [
+                UIColor(cgColor: primaryColor).shiftHSB(hueBy: 0.2, saturationBy: 0.2, brightnessBy: -0.1),
+                UIColor(cgColor: primaryColor).shiftHSB(hueBy: 0.05, saturationBy: -0.1, brightnessBy: 0.0),
+                UIColor(cgColor: primaryColor).shiftHSB(hueBy: -0.05, saturationBy: 0.1, brightnessBy: 0.0),
+                UIColor(cgColor: primaryColor).shiftHSB(hueBy: -0.2, saturationBy: 0.2, brightnessBy: 0.1),
+            ]
         
-        let colors: [UIColor] = [
-            UIColor(cgColor: primaryColor).shiftHSB(hueBy: 0.1, saturationBy: 0.0, brightnessBy: 0.0),
-            UIColor(cgColor: primaryColor),
-            UIColor(cgColor: primaryColor).shiftHSB(hueBy: -0.1, saturationBy: 0.2, brightnessBy: -0.3),
-        ]
-        
-        let colorMap: [Color] = colors.map { uiColor in
+        return colors.map { uiColor in
             Color(cgColor: uiColor.cgColor)
         }
-        
+    }
+    
+    /// Constructs a gradient to use as the view background.
+    private var gradient: some View {
         return LinearGradient(
-            gradient: Gradient(colors: colorMap),
+            gradient: Gradient(colors: backgroundColors),
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
