@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D92622929C71DF900C9DD2C /* AlbumCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622829C71DF900C9DD2C /* AlbumCardView.swift */; };
 		5DCDE0DF29BCF3AA00AA3287 /* DiscobotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE0DE29BCF3AA00AA3287 /* DiscobotApp.swift */; };
 		5DCDE0E129BCF3AA00AA3287 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE0E029BCF3AA00AA3287 /* ContentView.swift */; };
 		5DCDE0E329BCF3AB00AA3287 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DCDE0E229BCF3AB00AA3287 /* Assets.xcassets */; };
@@ -18,6 +19,7 @@
 
 /* Begin PBXFileReference section */
 		5D92622729C23A7E00C9DD2C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		5D92622829C71DF900C9DD2C /* AlbumCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumCardView.swift; sourceTree = "<group>"; };
 		5DCDE0DB29BCF3AA00AA3287 /* Discobot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Discobot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DCDE0DE29BCF3AA00AA3287 /* DiscobotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscobotApp.swift; sourceTree = "<group>"; };
 		5DCDE0E029BCF3AA00AA3287 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 				5DCDE0F129BCF5A200AA3287 /* SongsViewModel.swift */,
 				5DCDE0E229BCF3AB00AA3287 /* Assets.xcassets */,
 				5DCDE0E429BCF3AB00AA3287 /* Preview Content */,
+				5D92622829C71DF900C9DD2C /* AlbumCardView.swift */,
 			);
 			path = Discobot;
 			sourceTree = "<group>";
@@ -164,6 +167,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D92622929C71DF900C9DD2C /* AlbumCardView.swift in Sources */,
 				5DCDE0F229BCF5A200AA3287 /* SongsViewModel.swift in Sources */,
 				5DCDE0E129BCF3AA00AA3287 /* ContentView.swift in Sources */,
 				5DCDE0DF29BCF3AA00AA3287 /* DiscobotApp.swift in Sources */,
