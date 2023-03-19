@@ -11,7 +11,7 @@ import SwiftUI
 struct DiscobotApp: App {
     var body: some Scene {
         WindowGroup {
-            SongsViewModel()
+            ContentView()
         }
     }
 }

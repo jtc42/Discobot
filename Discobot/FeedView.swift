@@ -22,8 +22,13 @@ struct FeedItem: Identifiable, Hashable {
     let album: Album
 }
 
-struct SongsViewModel: View {
-    /// Flattened array of feed items
+struct FeedView: View {
+    /// If the first request is currently loading
+    @State var isLoading: Bool = false
+    /// If the request resulted in an error
+    @State var isError: Bool = false
+
+    /// Flattened array of feed itemsß
     @State var flatItems: [FeedItem] = []
 
     /// Page index of the item currently playing in the system player
@@ -44,6 +49,35 @@ struct SongsViewModel: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
+        // TODO: Fetch music from on a new parent view
+        VStack {
+            if isLoading {
+                ProgressView().progressViewStyle(CircularProgressViewStyle())
+            } else if isError {
+                VStack(spacing: 8.0) {
+                    Text("Error loading recommendations").font(.caption)
+                    Button(action: {
+                        Task {
+                            await fetchMusic()
+                        }
+                    }) {
+                        Text("Try again").font(.caption)
+                    }
+                }
+            } else {
+                mainFeedView
+            }
+        }
+        // On load, fetch music and start playing
+        .task {
+            await fetchMusic()
+            if !previewMuted {
+                await startPreviewFor(item: flatItems[currentIndex].album)
+            }
+        }
+    }
+
+    private var mainFeedView: some View {
         GeometryReader { geometry in
             PageViewReader { proxy in
                 VPageView(alignment: .top, pageHeight: geometry.size.height * 0.9, spacing: 24, index: $currentIndex) {
@@ -89,13 +123,6 @@ struct SongsViewModel: View {
                         previewPlayer.isMuted = newPreviewMuted
                     }
                 })
-                // On load, fetch music and start playing
-                .task {
-                    await fetchMusic()
-                    if !previewMuted {
-                        await startPreviewFor(item: flatItems[currentIndex].album)
-                    }
-                }
             }
         }
     }
@@ -135,13 +162,14 @@ struct SongsViewModel: View {
 
     private func fetchMusic() async {
         // Request permission
-        // TODO: Move to a login screen
+        // TODO: Handle auth in parent view
         let status = await MusicAuthorization.request()
 
         switch status {
         case .authorized:
             // Request -> Response
             do {
+                isLoading = true
                 var request = MusicPersonalRecommendationsRequest()
                 // TODO: Add loading extra items but running this function again with a new offset
                 request.limit = 25
@@ -149,8 +177,12 @@ struct SongsViewModel: View {
 
                 let result = try await request.response()
                 flatItems = flattenRecommendations(recommendations: result.recommendations)
+
+                isLoading = false
+                isError = false
             } catch {
-                print(String(describing: error))
+                isLoading = false
+                isError = true
             }
         default:
             break
@@ -215,6 +247,6 @@ struct SongsViewModel: View {
 
 struct SongsViewModel_Previews: PreviewProvider {
     static var previews: some View {
-        SongsViewModel()
+        FeedView()
     }
 }
