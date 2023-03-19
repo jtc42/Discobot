@@ -4,11 +4,10 @@
 //
 //  Created by Joel Collins on 11/03/2023.
 //
-// TODO: Fix landscape
-// TODO: Handle previews, see https://developer.apple.com/forums/thread/685311
-// TODO: Handle subscription state, see https://developer.apple.com/documentation/musickit/using_musickit_to_integrate_with_apple_music
+// TODO: Support playlists
+// TODO: Support landscape layout
+// TODO: Support iPad
 // TODO: Handle loading more items at end of scroll
-// TODO: Show reccommendation.title on card somewhere
 
 import AVFoundation
 import Combine
