@@ -16,11 +16,11 @@ import MusicKit
 import SwiftUI
 import SwiftUIPageView
 
-struct FeedItem: Identifiable, Hashable {
+struct FeedPage: Identifiable, Hashable {
     var id = UUID()
     let recommendationReason: String?
     let recommendationTitle: String?
-    let album: Album
+    let item: MusicPersonalRecommendation.Item
 }
 
 struct FeedView: View {
@@ -32,7 +32,7 @@ struct FeedView: View {
     @State var isError: Bool = false
 
     /// Flattened array of feed itemsß
-    @State var flatItems: [FeedItem] = []
+    @State var flatPages: [FeedPage] = []
 
     /// Page index of the item currently playing in the system player
     @State var nowPlayingIndex: Int? = nil
@@ -77,7 +77,7 @@ struct FeedView: View {
                 Task {
                     await fetchMusic()
                     if !previewMuted {
-                        await startPreviewFor(item: flatItems[currentIndex].album)
+                        await startPreviewFor(item: flatPages[currentIndex].item)
                     }
                 }
             }
@@ -88,12 +88,12 @@ struct FeedView: View {
         GeometryReader { geometry in
             PageViewReader { proxy in
                 VPageView(alignment: .top, pageHeight: geometry.size.height * 0.9, spacing: 24, index: $currentIndex) {
-                    ForEach(Array(flatItems.enumerated()), id: \.element) { index, item in
-                        AlbumCardView(
-                            album: item.album,
+                    ForEach(Array(flatPages.enumerated()), id: \.element) { index, page in
+                        FeedItemCardView(
+                            item: page.item,
                             pageIndex: index,
-                            recommendationTitle: item.recommendationTitle,
-                            recommendationReason: item.recommendationReason,
+                            recommendationTitle: page.recommendationTitle,
+                            recommendationReason: page.recommendationReason,
                             nowPlayingIndex: $nowPlayingIndex,
                             currentIndex: $currentIndex,
                             previewMuted: $previewMuted
@@ -115,7 +115,7 @@ struct FeedView: View {
                     initiatePreviews()
                     Task {
                         if !previewMuted {
-                            await startPreviewFor(item: flatItems[newIndex].album)
+                            await startPreviewFor(item: flatPages[newIndex].item)
                         }
                     }
                 })
@@ -125,7 +125,7 @@ struct FeedView: View {
                         if newPreviewMuted {
                             previewPlayer.pause()
                         } else {
-                            await startPreviewFor(item: flatItems[currentIndex].album)
+                            await startPreviewFor(item: flatPages[currentIndex].item)
                         }
                         previewPlayer.isMuted = newPreviewMuted
                     }
@@ -153,17 +153,31 @@ struct FeedView: View {
         previewPlayer.play()
     }
 
-    private func startPreviewFor(item: Album) async {
+    private func startPreviewFor(item: MusicPersonalRecommendation.Item) async {
         do {
-            let fullAlbum = try await item.with(.tracks)
-            if let tracks = fullAlbum.tracks {
-                let previewUrlStrings = tracks.compactMap {
-                    $0.previewAssets?.first?.url?.absoluteString
+            switch item {
+            case .album(let album):
+                let fullAlbum = try await album.with(.tracks)
+                if let tracks = fullAlbum.tracks {
+                    let previewUrlStrings = tracks.compactMap {
+                        $0.previewAssets?.first?.url?.absoluteString
+                    }
+                    startPreviewQueue(previewUrlStrings: previewUrlStrings)
                 }
-                startPreviewQueue(previewUrlStrings: previewUrlStrings)
+            case .playlist(let playlist):
+                let fullPlaylist = try await playlist.with(.tracks)
+                if let tracks = fullPlaylist.tracks {
+                    let previewUrlStrings = tracks.compactMap {
+                        $0.previewAssets?.first?.url?.absoluteString
+                    }
+                    startPreviewQueue(previewUrlStrings: previewUrlStrings)
+                }
+            case .station: break
+            @unknown default: break
             }
+
         } catch {
-            print("Failed to load album tracks")
+            print("Failed to load item tracks")
         }
     }
 
@@ -183,7 +197,7 @@ struct FeedView: View {
                 request.offset = 0
 
                 let result = try await request.response()
-                flatItems = flattenRecommendations(recommendations: result.recommendations)
+                flatPages = flattenRecommendations(recommendations: result.recommendations)
 
                 isLoading = false
                 isError = false
@@ -198,39 +212,29 @@ struct FeedView: View {
 
     private func flattenRecommendations(
         recommendations: MusicItemCollection<MusicPersonalRecommendation>,
-        simple: Bool = false,
         maxGroupSize: Int = 3
-    ) -> [FeedItem] {
-        if simple {
-            return recommendations.flatMap { recommendation in
-                recommendation.albums.map { album in
-                    FeedItem(
-                        recommendationReason: recommendation.reason,
-                        recommendationTitle: recommendation.title,
-                        album: album
-                    )
-                }
-            }
-        } else {
-            // Items to show at the top of the feed
-            var items: [FeedItem] = []
-            // Spares to put at the end of the feed
-            var spares: [FeedItem] = []
+    ) -> [FeedPage] {
+        // Items to show at the top of the feed
+        var items: [FeedPage] = []
+        // Spares to put at the end of the feed
+        var spares: [FeedPage] = []
 
-            // For each recommendation group
-            for recommendation in recommendations {
-                // Keep count of how many items in this recommendation
-                var groupCount = 0
-                // For each recommendation in the group
-                for album in recommendation.albums {
-                    // Iterate the group counter
-                    groupCount += 1
+        // For each recommendation group
+        for recommendation in recommendations {
+            // Keep count of how many items in this recommendation
+            var groupCount = 0
+            // For each recommendation in the group
+            for item in recommendation.items {
+                // Iterate the group counter
+                groupCount += 1
 
+                switch item {
+                case .album, .playlist:
                     // Create a feed item
-                    let item = FeedItem(
+                    let item = FeedPage(
                         recommendationReason: recommendation.reason,
                         recommendationTitle: recommendation.title,
-                        album: album
+                        item: item
                     )
                     // If we've not hit the max group size
                     if groupCount <= maxGroupSize {
@@ -240,15 +244,17 @@ struct FeedView: View {
                         // Add the item to the spares at the bottom
                         spares.append(item)
                     }
+
+                case .station: break
+                @unknown default: break
                 }
             }
-
-            // Shuffle spares
-            spares.shuffle()
-
-            // Join spare items to the bottom of the feed
-            return items + spares
         }
+        // Shuffle spares
+        spares.shuffle()
+
+        // Join spare items to the bottom of the feed
+        return items + spares
     }
 }
 

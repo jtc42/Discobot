@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5D92622929C71DF900C9DD2C /* AlbumCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622829C71DF900C9DD2C /* AlbumCardView.swift */; };
+		5D92622929C71DF900C9DD2C /* FeedItemCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */; };
 		5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */; };
 		5D92622E29C75B7700C9DD2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D92623029C75B7700C9DD2C /* Localizable.strings */; };
 		5D92623629C76CA200C9DD2C /* FluidGradient in Frameworks */ = {isa = PBXBuildFile; productRef = 5D92623529C76CA200C9DD2C /* FluidGradient */; };
@@ -24,7 +24,7 @@
 
 /* Begin PBXFileReference section */
 		5D92622729C23A7E00C9DD2C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		5D92622829C71DF900C9DD2C /* AlbumCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumCardView.swift; sourceTree = "<group>"; };
+		5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCardView.swift; sourceTree = "<group>"; };
 		5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		5D92622F29C75B7700C9DD2C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5D92623829C76F4F00C9DD2C /* UIColor+ShiftHSB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+ShiftHSB.swift"; sourceTree = "<group>"; };
@@ -90,7 +90,7 @@
 				5DCDE0F129BCF5A200AA3287 /* FeedView.swift */,
 				5DCDE0E229BCF3AB00AA3287 /* Assets.xcassets */,
 				5DCDE0E429BCF3AB00AA3287 /* Preview Content */,
-				5D92622829C71DF900C9DD2C /* AlbumCardView.swift */,
+				5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */,
 				5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */,
 			);
 			path = Discobot;
@@ -195,7 +195,7 @@
 			files = (
 				5D92623929C76F4F00C9DD2C /* UIColor+ShiftHSB.swift in Sources */,
 				5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */,
-				5D92622929C71DF900C9DD2C /* AlbumCardView.swift in Sources */,
+				5D92622929C71DF900C9DD2C /* FeedItemCardView.swift in Sources */,
 				5DCDE0F229BCF5A200AA3287 /* FeedView.swift in Sources */,
 				5DCDE0E129BCF3AA00AA3287 /* ContentView.swift in Sources */,
 				5DCDE0DF29BCF3AA00AA3287 /* DiscobotApp.swift in Sources */,
