@@ -40,6 +40,8 @@ struct FeedView: View {
     @State var currentIndex: Int = 0
 
     @State var previewMuted: Bool = true
+    @State var previewProgress: Float = 0
+    @State var previewIndex: Int = 0
     let previewPlayer: AVQueuePlayer = .init()
 
     // Track if the user has changed page yet (used to auto-unmute)
@@ -94,11 +96,15 @@ struct FeedView: View {
                             pageIndex: index,
                             recommendationTitle: page.recommendationTitle,
                             recommendationReason: page.recommendationReason,
+                            previewPlayer: previewPlayer,
                             nowPlayingIndex: $nowPlayingIndex,
                             currentIndex: $currentIndex,
-                            previewMuted: $previewMuted
+                            previewMuted: $previewMuted,
+                            previewProgress: $previewProgress,
+                            previewIndex: $previewIndex
                         )
                         .onTapGesture {
+                            print("tap")
                             // Tapping before first page change will unmute
                             initiatePreviews()
                             // Tapping will move to the tapped page
@@ -130,6 +136,13 @@ struct FeedView: View {
                         previewPlayer.isMuted = newPreviewMuted
                     }
                 })
+            }.onAppear {
+                self.previewPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1.0, preferredTimescale: 10), queue: .main) { time in
+                    guard let item = self.previewPlayer.currentItem else {
+                        return
+                    }
+                    self.previewProgress = min(Float(time.seconds / item.duration.seconds), 1.0)
+                }
             }
         }
     }

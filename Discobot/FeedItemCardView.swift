@@ -30,6 +30,9 @@ struct FeedItemCardView: View {
     let recommendationTitle: String?
     let recommendationReason: String?
 
+    /// Preview player instance
+    let previewPlayer: AVQueuePlayer
+
     /// Binding to the parent view's currently active playbackId
     @Binding public var nowPlayingIndex: Int?
 
@@ -38,6 +41,12 @@ struct FeedItemCardView: View {
 
     /// Binding to whether the preview is muted or not
     @Binding public var previewMuted: Bool
+
+    /// Binding to the preview player progress
+    @Binding public var previewProgress: Float
+
+    /// Binding to the preview player item index
+    @Binding public var previewIndex: Int
 
     // MARK: - Colours, UI etc
 
@@ -236,7 +245,6 @@ struct FeedItemCardView: View {
                             .clipShape(Circle())
                     }.padding(12)
                 }
-
                 // Everything other than album art
                 ZStack {
                     // Only show gradient if page is in view
@@ -248,6 +256,32 @@ struct FeedItemCardView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 16.0) {
+                        // Preview progress
+                        if isNearby {
+                            HStack {
+                                // Current actual player progress
+                                ProgressView(value: currentIndex == pageIndex ? previewProgress : 0.0, total: 1.0)
+                                    .progressViewStyle(LinearProgressViewStyle())
+                                    .tint(self.secondaryTextColor)
+                                    .foregroundColor(.gray)
+                                // Decorative skip forward bar
+                                ProgressView(value: 0.0, total: 1.0)
+                                    .progressViewStyle(LinearProgressViewStyle())
+                                    .tint(self.secondaryTextColor)
+                                    .foregroundColor(.gray)
+                                    // Skip bar is smaller
+                                    .frame(width: geometry.size.width / 8)
+                                    // Pad the tap target
+                                    .padding(.vertical, 16.0)
+                                    // Make into a tappable content shape
+                                    .contentShape(Rectangle())
+                                    // Skip to next preview on tap
+                                    .onTapGesture {
+                                        previewPlayer.advanceToNextItem()
+                                    }
+                            }
+                        }
+
                         // Initial spacer to push item info down
                         Spacer()
 
