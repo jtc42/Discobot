@@ -1,19 +1,31 @@
-#  <#Title#>
+# Discobot
 
-## Notes
+Apple Music discovery like "the other" service.
 
-```
-ForEach(reccommendation.items) { item in
-    switch item {
-    case .album(let album):
-        // TODO: Some way to either pass the VPageView onChange event to all AlbumCardView children (passing the new index as an arg, rather than having a binding), OR have the child AlbumCardViews populate a dictionary of preview links as soon as the top of the card is in view, and have the playback triggered directly in the VPageView onChange event (but would need to delay until we know we have the preview links asynchronously fetched. **Perhaps watch the value of the preview links dictionary binding and re-check preview playback**)
-        AlbumCardView(album: album, playbackId: index, pageIndex: index, nowPlayingId: $nowPlayingId, currentIndex: $currentIndex, previewPlayer: previewPlayer)
-    case .playlist:
-        VStack {} // Todo
-    case .station:
-        VStack {} // Todo
-    @unknown default:
-        VStack {} // Todo
-    }
-}
-```
+<p float="left">
+  <img src="https://raw.githubusercontent.com/jtc42/Discobot/main/Resources/IMG_2181.jpeg?token=GHSAT0AAAAAACBNMZVYFZJ4BICUQYDCYNBYZBZSZIA" width="180" />
+  <img src="https://raw.githubusercontent.com/jtc42/Discobot/main/Resources/IMG_2182.jpeg?token=GHSAT0AAAAAACBNMZVZXXCKVHFE4UGAUSRWZBZSZNQ" width="180" /> 
+  <img src="https://raw.githubusercontent.com/jtc42/Discobot/main/Resources/IMG_2183.jpeg?token=GHSAT0AAAAAACBNMZVZH27HAZVTGVY36ENUZBZSZTA" width="180" />
+</p>
+
+## Why?
+
+In 2023 Spotify launched their [new feed design](https://newsroom.spotify.com/2023-03-08/new-home-page-scroll-clips-previews/), to [almost universal dislike](https://piunikaweb.com/2023/04/14/new-spotify-home-page-ui-on-android-and-ios-faces-backlash/). Almost.
+
+Turns out I quite like it, which is particularly funny because I don't really use Spotify much. I generally prefer Apple Music.
+
+Discobot is essentially a standalone app providing something a bit like the new Spotify feed, but based on your Apple Music recommendations. It provides previews of albums and playlists as you scroll, and allows you to quickly open or start playing items in the Apple Music app.
+
+## Features
+
+* Supports albums and playlists from your Apple Music personal recommendations
+* Plays previews from the iTunes store as you scroll
+* Integrates with the Apple Music app and player
+* Animated card backgrounds for the aesthetic
+
+## Todo list
+
+- [ ] Add an app icon
+- [ ] Publish to the App Store
+- [ ] Button to quickly add items to your library
+- [ ] Button to quickly add to a "Listen Later" playlist
