@@ -22,6 +22,7 @@ Discobot is essentially a standalone app providing something a bit like the new 
 * Plays previews from the iTunes store as you scroll
 * Integrates with the Apple Music app and player
 * Animated card backgrounds for the aesthetic
+* Supports system light and dark modes
 
 ## Todo list
 
