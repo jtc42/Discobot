@@ -1,6 +1,6 @@
 # Discobot
 
-Apple Music discovery like "the other" service.
+Apple Music discovery like "the other" service, using SwiftUI.
 
 <p float="left">
   <img src="https://raw.githubusercontent.com/jtc42/Discobot/main/Resources/IMG_2181.jpeg?token=GHSAT0AAAAAACBNMZVYFZJ4BICUQYDCYNBYZBZSZIA" width="180" />
