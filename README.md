@@ -26,6 +26,7 @@ Discobot is essentially a standalone app providing something a bit like the new 
 
 ## Todo list
 
+- [ ] Add playlist/album filter 
 - [ ] Add an app icon
 - [ ] Publish to the App Store
 - [ ] Button to quickly add items to your library
