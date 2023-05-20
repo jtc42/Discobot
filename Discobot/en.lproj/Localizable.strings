@@ -20,4 +20,5 @@
 
 // Feed page
 "musicTokenRequestError" = "Cannot load recommendations. \nAn unknown error has occured.";
-"musicTokenRequestError.privacyAcknowledgementRequired" = "Cannot load recommendations. \nYou first need to accept the Apple Music privacy policy.";
+"musicTokenRequestError.privacyAcknowledgementRequired" = "Cannot load recommendations. \nYou need to accept the Apple Music privacy policy.";
+"musicTokenRequestError.permissionDenied" = "Cannot load recommendations. \nYou need to give Discobot permission to access your Apple Music library..";

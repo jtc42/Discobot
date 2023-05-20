@@ -60,6 +60,8 @@ struct FeedView: View {
         switch musicTokenRequestError {
         case .privacyAcknowledgementRequired:
             explanatoryText = Text(LocalizedStringKey("musicTokenRequestError.privacyAcknowledgementRequired"))
+        case .permissionDenied:
+            explanatoryText = Text(LocalizedStringKey("musicTokenRequestError.permissionDenied"))
         default:
             explanatoryText = Text(LocalizedStringKey("musicTokenRequestError"))
         }
