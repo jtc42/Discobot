@@ -30,6 +30,8 @@ struct FeedView: View {
     @State var isLoading: Bool = true
     /// If the request resulted in an error
     @State var isError: Bool = false
+    @State var errorMessage: String?
+    @State var musicTokenRequestError: MusicTokenRequestError?
 
     /// Flattened array of feed itemsß
     @State var flatPages: [FeedPage] = []
@@ -53,13 +55,24 @@ struct FeedView: View {
     /// The color scheme of the environment.
     @Environment(\.colorScheme) var colorScheme
 
+    private var errorText: Text {
+        let explanatoryText: Text
+        switch musicTokenRequestError {
+        case .privacyAcknowledgementRequired:
+            explanatoryText = Text(LocalizedStringKey("musicTokenRequestError.privacyAcknowledgementRequired"))
+        default:
+            explanatoryText = Text(LocalizedStringKey("musicTokenRequestError"))
+        }
+        return explanatoryText
+    }
+
     var body: some View {
         VStack {
             if isLoading || musicAuthorizationStatus == nil {
                 ProgressView().progressViewStyle(CircularProgressViewStyle())
             } else if isError {
                 VStack(spacing: 10.0) {
-                    Text("Error loading recommendations").font(.body)
+                    errorText.font(.body).multilineTextAlignment(.center)
                     Button(action: {
                         Task {
                             await fetchMusic()
@@ -196,7 +209,6 @@ struct FeedView: View {
 
     private func fetchMusic() async {
         // Request permission
-        // TODO: Handle MusicAuthorization
         let status = await MusicAuthorization.request()
 
         switch status {
@@ -214,6 +226,10 @@ struct FeedView: View {
 
                 isLoading = false
                 isError = false
+            } catch let error as MusicTokenRequestError {
+                isLoading = false
+                isError = true
+                musicTokenRequestError = error
             } catch {
                 isLoading = false
                 isError = true

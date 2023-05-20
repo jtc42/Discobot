@@ -16,4 +16,8 @@
 
 "musicAuthorizationStatus" = "Discobot uses Apple Music to find and play recommendations.";
 "musicAuthorizationStatus.restricted" = "Discobot cannot be used on this device because usage of Apple Music is restricted.";
-"musicAuthorizationStatus.denied" = "Please grant Discobot access to Apple Music in Settings";
+"musicAuthorizationStatus.denied" = "Please grant Discobot access to Apple Music in Settings.";
+
+// Feed page
+"musicTokenRequestError" = "Cannot load recommendations. \nAn unknown error has occured.";
+"musicTokenRequestError.privacyAcknowledgementRequired" = "Cannot load recommendations. \nYou first need to accept the Apple Music privacy policy.";
