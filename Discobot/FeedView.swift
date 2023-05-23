@@ -55,26 +55,27 @@ struct FeedView: View {
     /// The color scheme of the environment.
     @Environment(\.colorScheme) var colorScheme
 
-    private var errorText: Text {
-        let explanatoryText: Text
-        switch musicTokenRequestError {
-        case .privacyAcknowledgementRequired:
-            explanatoryText = Text(LocalizedStringKey("musicTokenRequestError.privacyAcknowledgementRequired"))
-        case .permissionDenied:
-            explanatoryText = Text(LocalizedStringKey("musicTokenRequestError.permissionDenied"))
-        default:
-            explanatoryText = Text(LocalizedStringKey("musicTokenRequestError"))
-        }
-        return explanatoryText
-    }
-
     var body: some View {
         VStack {
             if isLoading || musicAuthorizationStatus == nil {
                 ProgressView().progressViewStyle(CircularProgressViewStyle())
             } else if isError {
-                VStack(spacing: 10.0) {
-                    errorText.font(.body).multilineTextAlignment(.center)
+                VStack(spacing: 15.0) {
+                    VStack(spacing: 10.0) {
+                        if let errorDescription = musicTokenRequestError?.errorDescription {
+                            Text(errorDescription).bold()
+                        } else {
+                            Text(LocalizedStringKey("musicTokenRequestError")).bold()
+                            Text(musicTokenRequestError?.description)
+                        }
+                        if let errorReason = musicTokenRequestError?.failureReason {
+                            Text(errorReason)
+                        }
+                        if let recoverySuggestion = musicTokenRequestError?.recoverySuggestion {
+                            Text(recoverySuggestion)
+                        }
+                    }.font(.body).multilineTextAlignment(.center).padding(.horizontal, 26)
+
                     Button(action: {
                         Task {
                             await fetchMusic()
