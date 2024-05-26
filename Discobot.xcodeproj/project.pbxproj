@@ -15,6 +15,7 @@
 		5D5E66A82C0390A700FAF565 /* ChipStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E669E2C0390A700FAF565 /* ChipStyle.swift */; };
 		5D5E66A92C0390A700FAF565 /* DefaultChipStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66A02C0390A700FAF565 /* DefaultChipStyle.swift */; };
 		5D5E66AA2C0390A700FAF565 /* Chip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66A22C0390A700FAF565 /* Chip.swift */; };
+		5D5E66AC2C039AB200FAF565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66AB2C039AB200FAF565 /* UserDefaults.swift */; };
 		5D92622929C71DF900C9DD2C /* FeedItemCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */; };
 		5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */; };
 		5D92622E29C75B7700C9DD2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D92623029C75B7700C9DD2C /* Localizable.strings */; };
@@ -39,6 +40,7 @@
 		5D5E669E2C0390A700FAF565 /* ChipStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChipStyle.swift; sourceTree = "<group>"; };
 		5D5E66A02C0390A700FAF565 /* DefaultChipStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultChipStyle.swift; sourceTree = "<group>"; };
 		5D5E66A22C0390A700FAF565 /* Chip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chip.swift; sourceTree = "<group>"; };
+		5D5E66AB2C039AB200FAF565 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		5D92622729C23A7E00C9DD2C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCardView.swift; sourceTree = "<group>"; };
 		5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 			isa = PBXGroup;
 			children = (
 				5D92623829C76F4F00C9DD2C /* UIColor+ShiftHSB.swift */,
+				5D5E66AB2C039AB200FAF565 /* UserDefaults.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -268,6 +271,7 @@
 				5D5E66A82C0390A700FAF565 /* ChipStyle.swift in Sources */,
 				5D5E66972C0385ED00FAF565 /* MyCustomeChipStyle.swift in Sources */,
 				5DCDE0E129BCF3AA00AA3287 /* ContentView.swift in Sources */,
+				5D5E66AC2C039AB200FAF565 /* UserDefaults.swift in Sources */,
 				5D5E66A52C0390A700FAF565 /* EnvironmentValuesExtensions.swift in Sources */,
 				5DCDE0DF29BCF3AA00AA3287 /* DiscobotApp.swift in Sources */,
 				5D5E66AA2C0390A700FAF565 /* Chip.swift in Sources */,

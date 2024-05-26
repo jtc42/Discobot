@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var albumsOn = true
-    @State var playlistsOn = true
-    @State var stationsOn = false
+    @State var albumsOn = UserDefaults.standard.valueExists(forKey: "albumsOn") ? UserDefaults.standard.bool(forKey: "albumsOn") : true
+    @State var playlistsOn = UserDefaults.standard.valueExists(forKey: "playlistsOn") ? UserDefaults.standard.bool(forKey: "playlistsOn") : true
+    @State var stationsOn = UserDefaults.standard.valueExists(forKey: "stationsOn") ? UserDefaults.standard.bool(forKey: "stationsOn") : false
 
     var body: some View {
         NavigationView {
@@ -46,6 +46,15 @@ struct ContentView: View {
                     Spacer()
                 }
             }
+        }
+        .onChange(of: albumsOn) {
+            UserDefaults.standard.set(albumsOn, forKey: "albumsOn")
+        }
+        .onChange(of: playlistsOn) {
+            UserDefaults.standard.set(playlistsOn, forKey: "playlistsOn")
+        }
+        .onChange(of: stationsOn) {
+            UserDefaults.standard.set(stationsOn, forKey: "stationsOn")
         }
         // Display the welcome view when appropriate.
         .welcomeSheet()
