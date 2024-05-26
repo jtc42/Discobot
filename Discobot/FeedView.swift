@@ -46,8 +46,11 @@ struct FeedView: View {
     @State var previewIndex: Int = 0
     let previewPlayer: AVQueuePlayer = .init()
 
-    /// The MusicKit player to use for full Apple Music playback.
+    /// The MusicKit player to use for full system Apple Music playback.
     private let systemPlayer = SystemMusicPlayer.shared
+
+    /// The MusicKit player to use for application-specific Apple Music playback.
+    private let applicationPlayer = ApplicationMusicPlayer.shared
 
     // Track if the user has changed page yet (used to auto-unmute)
     @State var firstPageMove: Bool = true
@@ -174,9 +177,13 @@ struct FeedView: View {
         }
     }
 
-    private func startPreviewQueue(previewUrlStrings: [String]) {
+    private func resetPreviewPlayer() {
         previewPlayer.pause()
         previewPlayer.removeAllItems()
+    }
+
+    private func startPreviewQueue(previewUrlStrings: [String]) {
+        resetPreviewPlayer()
 
         for urlString in previewUrlStrings {
             if let url = URL(string: urlString) {
@@ -205,7 +212,14 @@ struct FeedView: View {
                     }
                     startPreviewQueue(previewUrlStrings: previewUrlStrings)
                 }
-            case .station: break
+            case .station(let station):
+                // Override preview progress
+                resetPreviewPlayer()
+                previewProgress = 1.0
+
+                // Use application MusicKit player to start radio station
+                applicationPlayer.queue = [station]
+                try await ApplicationMusicPlayer.shared.play()
             @unknown default: break
             }
 
@@ -265,7 +279,7 @@ struct FeedView: View {
                 groupCount += 1
 
                 switch item {
-                case .album, .playlist:
+                case .album, .playlist, .station:
                     // Create a feed item
                     let item = FeedPage(
                         recommendationReason: recommendation.reason,
@@ -280,8 +294,6 @@ struct FeedView: View {
                         // Add the item to the spares at the bottom
                         spares.append(item)
                     }
-
-                case .station: break
                 @unknown default: break
                 }
             }
