@@ -24,8 +24,8 @@ struct ContentView: View {
             .toolbarBackground(.visible)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
-                    Spacer()
                     Chip(isOn: $albumsOn) {
+                        Spacer() // Fix for bizarre padding/spacing issue
                         HStack {
                             Image(systemName: "square.stack").imageScale(.medium)
                             Text("Albums")
@@ -43,7 +43,6 @@ struct ContentView: View {
                             Text("Stations")
                         }
                     }.chipStyle(MyCustomeChipStyle())
-                    Spacer()
                 }
             }
         }
