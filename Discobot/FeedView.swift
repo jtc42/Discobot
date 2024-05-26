@@ -4,8 +4,6 @@
 //
 //  Created by Joel Collins on 11/03/2023.
 //
-// TODO: Add preview queue indicators and skip
-// TODO: Support playlists
 // TODO: Support landscape layout
 // TODO: Support iPad
 // TODO: Handle loading more items at end of scroll
@@ -70,6 +68,9 @@ struct FeedView: View {
         }
         return filteredPages[currentIndex].item
     }
+
+    // Item previously previewed
+    @State var previousPreviewItem: MusicPersonalRecommendation.Item?
 
     /// The color scheme of the environment.
     @Environment(\.colorScheme) var colorScheme
@@ -228,7 +229,11 @@ struct FeedView: View {
         Task {
             if !previewMuted {
                 if let currentPreviewItem = self.currentPreviewItem {
-                    await startPreviewFor(item: currentPreviewItem)
+                    // Only change preview if we're actually changing the item to be previewed
+                    if previousPreviewItem == nil || currentPreviewItem != previousPreviewItem {
+                        self.previousPreviewItem = currentPreviewItem
+                        await startPreviewFor(item: currentPreviewItem)
+                    }
                 }
             }
         }
@@ -258,7 +263,6 @@ struct FeedView: View {
     }
 
     private func startPreviewFor(item: MusicPersonalRecommendation.Item) async {
-        // TODO: Return early if currently previewing item matches incoming item
         do {
             print("previewing item: " + item.title)
             switch item {
