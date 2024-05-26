@@ -7,7 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5D5E66952C0370B500FAF565 /* Chip in Frameworks */ = {isa = PBXBuildFile; productRef = 5D5E66942C0370B500FAF565 /* Chip */; };
+		5D5E66972C0385ED00FAF565 /* MyCustomeChipStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66962C0385ED00FAF565 /* MyCustomeChipStyle.swift */; };
+		5D5E66A42C0390A700FAF565 /* ChipViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66982C0390A700FAF565 /* ChipViewExtensions.swift */; };
+		5D5E66A52C0390A700FAF565 /* EnvironmentValuesExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66992C0390A700FAF565 /* EnvironmentValuesExtensions.swift */; };
+		5D5E66A62C0390A700FAF565 /* ChipStyleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E669B2C0390A700FAF565 /* ChipStyleConfiguration.swift */; };
+		5D5E66A72C0390A700FAF565 /* ChipStyleKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E669C2C0390A700FAF565 /* ChipStyleKey.swift */; };
+		5D5E66A82C0390A700FAF565 /* ChipStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E669E2C0390A700FAF565 /* ChipStyle.swift */; };
+		5D5E66A92C0390A700FAF565 /* DefaultChipStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66A02C0390A700FAF565 /* DefaultChipStyle.swift */; };
+		5D5E66AA2C0390A700FAF565 /* Chip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66A22C0390A700FAF565 /* Chip.swift */; };
 		5D92622929C71DF900C9DD2C /* FeedItemCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */; };
 		5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */; };
 		5D92622E29C75B7700C9DD2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D92623029C75B7700C9DD2C /* Localizable.strings */; };
@@ -24,6 +31,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5D5E66962C0385ED00FAF565 /* MyCustomeChipStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCustomeChipStyle.swift; sourceTree = "<group>"; };
+		5D5E66982C0390A700FAF565 /* ChipViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChipViewExtensions.swift; sourceTree = "<group>"; };
+		5D5E66992C0390A700FAF565 /* EnvironmentValuesExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvironmentValuesExtensions.swift; sourceTree = "<group>"; };
+		5D5E669B2C0390A700FAF565 /* ChipStyleConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChipStyleConfiguration.swift; sourceTree = "<group>"; };
+		5D5E669C2C0390A700FAF565 /* ChipStyleKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChipStyleKey.swift; sourceTree = "<group>"; };
+		5D5E669E2C0390A700FAF565 /* ChipStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChipStyle.swift; sourceTree = "<group>"; };
+		5D5E66A02C0390A700FAF565 /* DefaultChipStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultChipStyle.swift; sourceTree = "<group>"; };
+		5D5E66A22C0390A700FAF565 /* Chip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chip.swift; sourceTree = "<group>"; };
 		5D92622729C23A7E00C9DD2C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCardView.swift; sourceTree = "<group>"; };
 		5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
@@ -47,7 +62,6 @@
 				5DCDE10729C0F73500AA3287 /* SwiftUIPageView in Frameworks */,
 				5D92623C29C7764400C9DD2C /* SkeletonUI in Frameworks */,
 				5D92623629C76CA200C9DD2C /* FluidGradient in Frameworks */,
-				5D5E66952C0370B500FAF565 /* Chip in Frameworks */,
 				5DCDE0EE29BCF3E300AA3287 /* MusicKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -55,6 +69,52 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5D5E669A2C0390A700FAF565 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5D5E66982C0390A700FAF565 /* ChipViewExtensions.swift */,
+				5D5E66992C0390A700FAF565 /* EnvironmentValuesExtensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		5D5E669D2C0390A700FAF565 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5D5E669B2C0390A700FAF565 /* ChipStyleConfiguration.swift */,
+				5D5E669C2C0390A700FAF565 /* ChipStyleKey.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5D5E669F2C0390A700FAF565 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				5D5E669E2C0390A700FAF565 /* ChipStyle.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		5D5E66A12C0390A700FAF565 /* Styles */ = {
+			isa = PBXGroup;
+			children = (
+				5D5E66A02C0390A700FAF565 /* DefaultChipStyle.swift */,
+			);
+			path = Styles;
+			sourceTree = "<group>";
+		};
+		5D5E66A32C0390A700FAF565 /* Chip */ = {
+			isa = PBXGroup;
+			children = (
+				5D5E669A2C0390A700FAF565 /* Extensions */,
+				5D5E669D2C0390A700FAF565 /* Models */,
+				5D5E669F2C0390A700FAF565 /* Protocols */,
+				5D5E66A12C0390A700FAF565 /* Styles */,
+				5D5E66A22C0390A700FAF565 /* Chip.swift */,
+			);
+			path = Chip;
+			sourceTree = "<group>";
+		};
 		5D92623729C76F3700C9DD2C /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -84,6 +144,7 @@
 		5DCDE0DD29BCF3AA00AA3287 /* Discobot */ = {
 			isa = PBXGroup;
 			children = (
+				5D5E66A32C0390A700FAF565 /* Chip */,
 				5D92623729C76F3700C9DD2C /* Extensions */,
 				5D92623029C75B7700C9DD2C /* Localizable.strings */,
 				5DCDE0F329BCFEFB00AA3287 /* Info.plist */,
@@ -94,6 +155,7 @@
 				5DCDE0E429BCF3AB00AA3287 /* Preview Content */,
 				5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */,
 				5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */,
+				5D5E66962C0385ED00FAF565 /* MyCustomeChipStyle.swift */,
 			);
 			path = Discobot;
 			sourceTree = "<group>";
@@ -134,7 +196,6 @@
 				5DCDE10629C0F73500AA3287 /* SwiftUIPageView */,
 				5D92623529C76CA200C9DD2C /* FluidGradient */,
 				5D92623B29C7764400C9DD2C /* SkeletonUI */,
-				5D5E66942C0370B500FAF565 /* Chip */,
 			);
 			productName = Discobot;
 			productReference = 5DCDE0DB29BCF3AA00AA3287 /* Discobot.app */;
@@ -168,7 +229,6 @@
 				5DCDE10529C0F73500AA3287 /* XCRemoteSwiftPackageReference "SwiftUIPageView" */,
 				5D92623429C76CA200C9DD2C /* XCRemoteSwiftPackageReference "FluidGradient" */,
 				5D92623A29C7764400C9DD2C /* XCRemoteSwiftPackageReference "SkeletonUI" */,
-				5D5E66932C0370B500FAF565 /* XCRemoteSwiftPackageReference "Chip" */,
 			);
 			productRefGroup = 5DCDE0DC29BCF3AA00AA3287 /* Products */;
 			projectDirPath = "";
@@ -197,12 +257,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D5E66A92C0390A700FAF565 /* DefaultChipStyle.swift in Sources */,
+				5D5E66A62C0390A700FAF565 /* ChipStyleConfiguration.swift in Sources */,
+				5D5E66A72C0390A700FAF565 /* ChipStyleKey.swift in Sources */,
 				5D92623929C76F4F00C9DD2C /* UIColor+ShiftHSB.swift in Sources */,
 				5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */,
+				5D5E66A42C0390A700FAF565 /* ChipViewExtensions.swift in Sources */,
 				5D92622929C71DF900C9DD2C /* FeedItemCardView.swift in Sources */,
 				5DCDE0F229BCF5A200AA3287 /* FeedView.swift in Sources */,
+				5D5E66A82C0390A700FAF565 /* ChipStyle.swift in Sources */,
+				5D5E66972C0385ED00FAF565 /* MyCustomeChipStyle.swift in Sources */,
 				5DCDE0E129BCF3AA00AA3287 /* ContentView.swift in Sources */,
+				5D5E66A52C0390A700FAF565 /* EnvironmentValuesExtensions.swift in Sources */,
 				5DCDE0DF29BCF3AA00AA3287 /* DiscobotApp.swift in Sources */,
+				5D5E66AA2C0390A700FAF565 /* Chip.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,14 +498,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		5D5E66932C0370B500FAF565 /* XCRemoteSwiftPackageReference "Chip" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Torear797/Chip";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.1;
-			};
-		};
 		5D92623429C76CA200C9DD2C /* XCRemoteSwiftPackageReference "FluidGradient" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Cindori/FluidGradient";
@@ -465,11 +525,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		5D5E66942C0370B500FAF565 /* Chip */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5D5E66932C0370B500FAF565 /* XCRemoteSwiftPackageReference "Chip" */;
-			productName = Chip;
-		};
 		5D92623529C76CA200C9DD2C /* FluidGradient */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5D92623429C76CA200C9DD2C /* XCRemoteSwiftPackageReference "FluidGradient" */;

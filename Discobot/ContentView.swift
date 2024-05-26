@@ -5,7 +5,6 @@
 //  Created by Joel Collins on 11/03/2023.
 //
 
-import Chip
 import SwiftUI
 
 struct ContentView: View {
@@ -24,14 +23,27 @@ struct ContentView: View {
             .navigationBarHidden(false)
             .toolbarBackground(.visible)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Chip("Albums", isOn: $albumsOn)
-                }
-                ToolbarItem(placement: .topBarLeading) {
-                    Chip("Playlists", isOn: $playlistsOn)
-                }
-                ToolbarItem(placement: .topBarLeading) {
-                    Chip("Stations", isOn: $stationsOn)
+                ToolbarItemGroup(placement: .topBarLeading) {
+                    Spacer()
+                    Chip(isOn: $albumsOn) {
+                        HStack {
+                            Image(systemName: "square.stack").imageScale(.medium)
+                            Text("Albums")
+                        }
+                    }.chipStyle(MyCustomeChipStyle())
+                    Chip(isOn: $playlistsOn) {
+                        HStack {
+                            Image(systemName: "music.note.list").imageScale(.medium)
+                            Text("Playlists")
+                        }
+                    }.chipStyle(MyCustomeChipStyle())
+                    Chip(isOn: $stationsOn) {
+                        HStack {
+                            Image(systemName: "dot.radiowaves.left.and.right").imageScale(.medium)
+                            Text("Stations")
+                        }
+                    }.chipStyle(MyCustomeChipStyle())
+                    Spacer()
                 }
             }
         }

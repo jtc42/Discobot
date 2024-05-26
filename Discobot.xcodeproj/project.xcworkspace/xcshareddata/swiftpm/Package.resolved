@@ -1,15 +1,6 @@
 {
-  "originHash" : "9425eaa1a1737760b6105d43551bed0b53466651761f63066590d511818a2d8c",
+  "originHash" : "669e4b2c7ad9eac1a28025a7ff407fadfac1dcccab39bce5b1fa4a0d9d4ffc33",
   "pins" : [
-    {
-      "identity" : "chip",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Torear797/Chip",
-      "state" : {
-        "revision" : "d18085e4e8cb9f5f8715874a208da01ee70856d9",
-        "version" : "1.0.1"
-      }
-    },
     {
       "identity" : "fluidgradient",
       "kind" : "remoteSourceControl",

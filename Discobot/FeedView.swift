@@ -177,11 +177,20 @@ struct FeedView: View {
                 // When filter selections change
                 .onChange(of: [albumsOn, playlistsOn, stationsOn]) {
                     print("Selection changed")
+                    // Empty filter is a full filter
+                    if !(albumsOn || playlistsOn || stationsOn) {
+                        albumsOn = true
+                        playlistsOn = true
+                        stationsOn = true
+                    }
+
                     // Scroll to top if not already there
                     if currentIndex != 0 {
                         proxy.moveTo(0)
+                    } else {
+                        // Manually trigger a change in preview item
+                        onIndexChange()
                     }
-                    onIndexChange()
                 }
                 // When page changes
                 .onChange(of: currentIndex) {
@@ -249,6 +258,7 @@ struct FeedView: View {
     }
 
     private func startPreviewFor(item: MusicPersonalRecommendation.Item) async {
+        // TODO: Return early if currently previewing item matches incoming item
         do {
             print("previewing item: " + item.title)
             switch item {
