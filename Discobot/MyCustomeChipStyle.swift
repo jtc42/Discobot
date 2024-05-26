@@ -46,7 +46,7 @@ struct MyCustomeChipStyle: ChipStyle {
                 .foregroundColor(fontColor)
                 .lineLimit(1)
                 .frame(height: height)
-                .padding(.horizontal, 6)
+                .padding(.horizontal, 4)
                 .background(backgroundColor)
                 .clipShape(.rect(cornerRadius: radius)) // Background radius
                 .overlay( // Draw border
