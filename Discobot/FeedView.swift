@@ -132,26 +132,26 @@ struct FeedView: View {
                 }
                 .padding(.horizontal, 12)
                 // When page changes
-                .onChange(of: currentIndex, perform: { newIndex in
+                .onChange(of: currentIndex) {
                     // If it's the first time the user has changed page, unmute
                     initiatePreviews()
                     Task {
                         if !previewMuted {
-                            await startPreviewFor(item: flatPages[newIndex].item)
+                            await startPreviewFor(item: flatPages[currentIndex].item)
                         }
                     }
-                })
+                }
                 // When preview mute changes
-                .onChange(of: previewMuted, perform: { newPreviewMuted in
+                .onChange(of: previewMuted) {
                     Task {
-                        if newPreviewMuted {
+                        if previewMuted {
                             previewPlayer.pause()
                         } else {
                             await startPreviewFor(item: flatPages[currentIndex].item)
                         }
-                        previewPlayer.isMuted = newPreviewMuted
+                        previewPlayer.isMuted = previewMuted
                     }
-                })
+                }
             }.onAppear {
                 self.previewPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1.0, preferredTimescale: 10), queue: .main) { time in
                     guard let item = self.previewPlayer.currentItem else {
