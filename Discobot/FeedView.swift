@@ -46,6 +46,9 @@ struct FeedView: View {
     @State var previewIndex: Int = 0
     let previewPlayer: AVQueuePlayer = .init()
 
+    /// The MusicKit player to use for full Apple Music playback.
+    private let systemPlayer = SystemMusicPlayer.shared
+
     // Track if the user has changed page yet (used to auto-unmute)
     @State var firstPageMove: Bool = true
 
@@ -113,6 +116,7 @@ struct FeedView: View {
                             recommendationTitle: page.recommendationTitle,
                             recommendationReason: page.recommendationReason,
                             previewPlayer: previewPlayer,
+                            systemPlayer: systemPlayer,
                             nowPlayingIndex: $nowPlayingIndex,
                             currentIndex: $currentIndex,
                             previewMuted: $previewMuted,

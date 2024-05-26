@@ -33,6 +33,9 @@ struct FeedItemCardView: View {
     /// Preview player instance
     let previewPlayer: AVQueuePlayer
 
+    // Full system music player instance
+    let systemPlayer: SystemMusicPlayer
+
     /// Binding to the parent view's currently active playbackId
     @Binding public var nowPlayingIndex: Int?
 
@@ -96,19 +99,17 @@ struct FeedItemCardView: View {
 
     // MARK: - System music playback
 
-    /// The MusicKit player to use for Apple Music playback.
-    private let player = SystemMusicPlayer.shared
     /// The state of the MusicKit player to use for Apple Music playback.
     @ObservedObject private var playerState = SystemMusicPlayer.shared.state
 
     /// `true` when the player is playing.
     private var isPlaying: Bool {
-        return (playerState.playbackStatus == .playing)
+        return playerState.playbackStatus == .playing
     }
 
     /// `true` when this album is currently active (may be paused).
     private var nowPlayingThisAlbum: Bool {
-        return (nowPlayingIndex == pageIndex)
+        return nowPlayingIndex == pageIndex
     }
 
     /// `true` when this album is currently active  and playing
@@ -167,11 +168,11 @@ struct FeedItemCardView: View {
                 // Set this item as the queue and start playing
                 switch item {
                 case .album(let album):
-                    player.queue = [album]
+                    systemPlayer.queue = [album]
                 case .playlist(let playlist):
-                    player.queue = [playlist]
+                    systemPlayer.queue = [playlist]
                 case .station(let station):
-                    player.queue = [station]
+                    systemPlayer.queue = [station]
                 @unknown default:
                     break
                 }
@@ -181,14 +182,14 @@ struct FeedItemCardView: View {
                 // Resume
                 Task {
                     do {
-                        try await player.play()
+                        try await systemPlayer.play()
                     } catch {
                         print("Failed to resume playing with error: \(error).")
                     }
                 }
             }
         } else {
-            player.pause()
+            systemPlayer.pause()
         }
     }
 
@@ -200,7 +201,7 @@ struct FeedItemCardView: View {
         Task {
             do {
                 // Try playing with the system music player
-                try await player.play()
+                try await systemPlayer.play()
                 // Mute previews now something is actually playing
                 previewMuted = true
                 // Update the shared state for which item is playing
