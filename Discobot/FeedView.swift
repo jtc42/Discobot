@@ -4,8 +4,6 @@
 //
 //  Created by Joel Collins on 11/03/2023.
 //
-// TODO: Add preview queue indicators and skip
-// TODO: Support playlists
 // TODO: Support landscape layout
 // TODO: Support iPad
 // TODO: Handle loading more items at end of scroll
@@ -25,6 +23,11 @@ struct FeedPage: Identifiable, Hashable {
 
 struct FeedView: View {
     @State var musicAuthorizationStatus: MusicAuthorization.Status?
+
+    /// Binding to the parent view's selected content types
+    @Binding public var albumsOn: Bool
+    @Binding public var playlistsOn: Bool
+    @Binding public var stationsOn: Bool
 
     /// If the first request is currently loading
     @State var isLoading: Bool = true
@@ -46,11 +49,28 @@ struct FeedView: View {
     @State var previewIndex: Int = 0
     let previewPlayer: AVQueuePlayer = .init()
 
+    /// The MusicKit player to use for full system Apple Music playback.
+    private let systemPlayer = SystemMusicPlayer.shared
+
+    /// The MusicKit player to use for application-specific Apple Music playback.
+    private let applicationPlayer = ApplicationMusicPlayer.shared
+
     // Track if the user has changed page yet (used to auto-unmute)
     @State var firstPageMove: Bool = true
 
     // Padding between pages
     let itemPadding = 40.0
+
+    // Item currently being previewed
+    private var currentPreviewItem: MusicPersonalRecommendation.Item? {
+        if filteredPages.isEmpty || currentIndex > filteredPages.count {
+            return nil
+        }
+        return filteredPages[currentIndex].item
+    }
+
+    // Item previously previewed
+    @State var previousPreviewItem: MusicPersonalRecommendation.Item?
 
     /// The color scheme of the environment.
     @Environment(\.colorScheme) var colorScheme
@@ -95,24 +115,48 @@ struct FeedView: View {
                 Task {
                     await fetchMusic()
                     if !previewMuted {
-                        await startPreviewFor(item: flatPages[currentIndex].item)
+                        if let currentPreviewItem = self.currentPreviewItem {
+                            await startPreviewFor(item: currentPreviewItem)
+                        }
                     }
                 }
             }
         })
     }
 
+    // Step 2: Computed Property for Filtering
+    var filteredPages: [FeedPage] {
+        flatPages.filter { page in
+            // If no chips are selected
+            if !(albumsOn || playlistsOn || stationsOn) {
+                return true
+            }
+            switch page.item {
+            case .album:
+                return albumsOn
+            case .playlist:
+                return playlistsOn
+            case .station:
+                return stationsOn
+            @unknown default:
+                return false
+            }
+        }
+    }
+
     private var mainFeedView: some View {
         GeometryReader { geometry in
             PageViewReader { proxy in
                 VPageView(alignment: .top, pageHeight: geometry.size.height * 0.9, spacing: 24, index: $currentIndex) {
-                    ForEach(Array(flatPages.enumerated()), id: \.element) { index, page in
+                    /// See https://stackoverflow.com/questions/59295206/how-do-you-use-enumerated-with-foreach-in-swiftui
+                    ForEach(Array(zip(filteredPages.indices, filteredPages)), id: \.0) { index, page in
                         FeedItemCardView(
                             item: page.item,
                             pageIndex: index,
                             recommendationTitle: page.recommendationTitle,
                             recommendationReason: page.recommendationReason,
                             previewPlayer: previewPlayer,
+                            systemPlayer: systemPlayer,
                             nowPlayingIndex: $nowPlayingIndex,
                             currentIndex: $currentIndex,
                             previewMuted: $previewMuted,
@@ -131,33 +175,65 @@ struct FeedView: View {
                     }
                 }
                 .padding(.horizontal, 12)
-                // When page changes
-                .onChange(of: currentIndex, perform: { newIndex in
-                    // If it's the first time the user has changed page, unmute
-                    initiatePreviews()
-                    Task {
-                        if !previewMuted {
-                            await startPreviewFor(item: flatPages[newIndex].item)
-                        }
+                // When filter selections change
+                .onChange(of: [albumsOn, playlistsOn, stationsOn]) {
+                    print("Selection changed")
+                    // Empty filter is a full filter
+                    if !(albumsOn || playlistsOn || stationsOn) {
+                        albumsOn = true
+                        playlistsOn = true
+                        stationsOn = true
                     }
-                })
+
+                    // Scroll to top if not already there
+                    if currentIndex != 0 {
+                        proxy.moveTo(0)
+                    } else {
+                        // Manually trigger a change in preview item
+                        onIndexChange()
+                    }
+                }
+                // When page changes
+                .onChange(of: currentIndex) {
+                    print("onChange of currentIndex")
+                    onIndexChange()
+                }
                 // When preview mute changes
-                .onChange(of: previewMuted, perform: { newPreviewMuted in
+                .onChange(of: previewMuted) {
                     Task {
-                        if newPreviewMuted {
+                        if previewMuted {
                             previewPlayer.pause()
                         } else {
-                            await startPreviewFor(item: flatPages[currentIndex].item)
+                            if let currentPreviewItem = self.currentPreviewItem {
+                                await startPreviewFor(item: currentPreviewItem)
+                            }
                         }
-                        previewPlayer.isMuted = newPreviewMuted
+                        previewPlayer.isMuted = previewMuted
                     }
-                })
+                }
             }.onAppear {
                 self.previewPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1.0, preferredTimescale: 10), queue: .main) { time in
                     guard let item = self.previewPlayer.currentItem else {
                         return
                     }
                     self.previewProgress = min(Float(time.seconds / item.duration.seconds), 1.0)
+                }
+            }
+        }
+    }
+
+    private func onIndexChange() {
+        print("Current index changed")
+        // If it's the first time the user has changed page, unmute
+        initiatePreviews()
+        Task {
+            if !previewMuted {
+                if let currentPreviewItem = self.currentPreviewItem {
+                    // Only change preview if we're actually changing the item to be previewed
+                    if previousPreviewItem == nil || currentPreviewItem != previousPreviewItem {
+                        self.previousPreviewItem = currentPreviewItem
+                        await startPreviewFor(item: currentPreviewItem)
+                    }
                 }
             }
         }
@@ -170,9 +246,13 @@ struct FeedView: View {
         }
     }
 
-    private func startPreviewQueue(previewUrlStrings: [String]) {
+    private func resetPreviewPlayer() {
         previewPlayer.pause()
         previewPlayer.removeAllItems()
+    }
+
+    private func startPreviewQueue(previewUrlStrings: [String]) {
+        resetPreviewPlayer()
 
         for urlString in previewUrlStrings {
             if let url = URL(string: urlString) {
@@ -184,6 +264,7 @@ struct FeedView: View {
 
     private func startPreviewFor(item: MusicPersonalRecommendation.Item) async {
         do {
+            print("previewing item: " + item.title)
             switch item {
             case .album(let album):
                 let fullAlbum = try await album.with(.tracks)
@@ -201,7 +282,14 @@ struct FeedView: View {
                     }
                     startPreviewQueue(previewUrlStrings: previewUrlStrings)
                 }
-            case .station: break
+            case .station(let station):
+                // Override preview progress
+                resetPreviewPlayer()
+                previewProgress = 1.0
+
+                // Use application MusicKit player to start radio station
+                applicationPlayer.queue = [station]
+                try await ApplicationMusicPlayer.shared.play()
             @unknown default: break
             }
 
@@ -261,7 +349,7 @@ struct FeedView: View {
                 groupCount += 1
 
                 switch item {
-                case .album, .playlist:
+                case .album, .playlist, .station:
                     // Create a feed item
                     let item = FeedPage(
                         recommendationReason: recommendation.reason,
@@ -276,8 +364,6 @@ struct FeedView: View {
                         // Add the item to the spares at the bottom
                         spares.append(item)
                     }
-
-                case .station: break
                 @unknown default: break
                 }
             }
@@ -287,11 +373,5 @@ struct FeedView: View {
 
         // Join spare items to the bottom of the feed
         return items + spares
-    }
-}
-
-struct SongsViewModel_Previews: PreviewProvider {
-    static var previews: some View {
-        FeedView()
     }
 }
