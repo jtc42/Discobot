@@ -7,14 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5D5E66972C0385ED00FAF565 /* MyCustomeChipStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66962C0385ED00FAF565 /* MyCustomeChipStyle.swift */; };
-		5D5E66A42C0390A700FAF565 /* ChipViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66982C0390A700FAF565 /* ChipViewExtensions.swift */; };
-		5D5E66A52C0390A700FAF565 /* EnvironmentValuesExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66992C0390A700FAF565 /* EnvironmentValuesExtensions.swift */; };
-		5D5E66A62C0390A700FAF565 /* ChipStyleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E669B2C0390A700FAF565 /* ChipStyleConfiguration.swift */; };
-		5D5E66A72C0390A700FAF565 /* ChipStyleKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E669C2C0390A700FAF565 /* ChipStyleKey.swift */; };
-		5D5E66A82C0390A700FAF565 /* ChipStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E669E2C0390A700FAF565 /* ChipStyle.swift */; };
-		5D5E66A92C0390A700FAF565 /* DefaultChipStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66A02C0390A700FAF565 /* DefaultChipStyle.swift */; };
-		5D5E66AA2C0390A700FAF565 /* Chip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66A22C0390A700FAF565 /* Chip.swift */; };
 		5D5E66AC2C039AB200FAF565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66AB2C039AB200FAF565 /* UserDefaults.swift */; };
 		5D92622929C71DF900C9DD2C /* FeedItemCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */; };
 		5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */; };
@@ -32,14 +24,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5D5E66962C0385ED00FAF565 /* MyCustomeChipStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCustomeChipStyle.swift; sourceTree = "<group>"; };
-		5D5E66982C0390A700FAF565 /* ChipViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChipViewExtensions.swift; sourceTree = "<group>"; };
-		5D5E66992C0390A700FAF565 /* EnvironmentValuesExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvironmentValuesExtensions.swift; sourceTree = "<group>"; };
-		5D5E669B2C0390A700FAF565 /* ChipStyleConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChipStyleConfiguration.swift; sourceTree = "<group>"; };
-		5D5E669C2C0390A700FAF565 /* ChipStyleKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChipStyleKey.swift; sourceTree = "<group>"; };
-		5D5E669E2C0390A700FAF565 /* ChipStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChipStyle.swift; sourceTree = "<group>"; };
-		5D5E66A02C0390A700FAF565 /* DefaultChipStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultChipStyle.swift; sourceTree = "<group>"; };
-		5D5E66A22C0390A700FAF565 /* Chip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chip.swift; sourceTree = "<group>"; };
 		5D5E66AB2C039AB200FAF565 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		5D92622729C23A7E00C9DD2C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCardView.swift; sourceTree = "<group>"; };
@@ -71,52 +55,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5D5E669A2C0390A700FAF565 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				5D5E66982C0390A700FAF565 /* ChipViewExtensions.swift */,
-				5D5E66992C0390A700FAF565 /* EnvironmentValuesExtensions.swift */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		5D5E669D2C0390A700FAF565 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				5D5E669B2C0390A700FAF565 /* ChipStyleConfiguration.swift */,
-				5D5E669C2C0390A700FAF565 /* ChipStyleKey.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		5D5E669F2C0390A700FAF565 /* Protocols */ = {
-			isa = PBXGroup;
-			children = (
-				5D5E669E2C0390A700FAF565 /* ChipStyle.swift */,
-			);
-			path = Protocols;
-			sourceTree = "<group>";
-		};
-		5D5E66A12C0390A700FAF565 /* Styles */ = {
-			isa = PBXGroup;
-			children = (
-				5D5E66A02C0390A700FAF565 /* DefaultChipStyle.swift */,
-			);
-			path = Styles;
-			sourceTree = "<group>";
-		};
-		5D5E66A32C0390A700FAF565 /* Chip */ = {
-			isa = PBXGroup;
-			children = (
-				5D5E669A2C0390A700FAF565 /* Extensions */,
-				5D5E669D2C0390A700FAF565 /* Models */,
-				5D5E669F2C0390A700FAF565 /* Protocols */,
-				5D5E66A12C0390A700FAF565 /* Styles */,
-				5D5E66A22C0390A700FAF565 /* Chip.swift */,
-			);
-			path = Chip;
-			sourceTree = "<group>";
-		};
 		5D92623729C76F3700C9DD2C /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -147,7 +85,6 @@
 		5DCDE0DD29BCF3AA00AA3287 /* Discobot */ = {
 			isa = PBXGroup;
 			children = (
-				5D5E66A32C0390A700FAF565 /* Chip */,
 				5D92623729C76F3700C9DD2C /* Extensions */,
 				5D92623029C75B7700C9DD2C /* Localizable.strings */,
 				5DCDE0F329BCFEFB00AA3287 /* Info.plist */,
@@ -158,7 +95,6 @@
 				5DCDE0E429BCF3AB00AA3287 /* Preview Content */,
 				5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */,
 				5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */,
-				5D5E66962C0385ED00FAF565 /* MyCustomeChipStyle.swift */,
 			);
 			path = Discobot;
 			sourceTree = "<group>";
@@ -212,7 +148,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					5DCDE0DA29BCF3AA00AA3287 = {
 						CreatedOnToolsVersion = 14.2;
@@ -260,21 +196,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5D5E66A92C0390A700FAF565 /* DefaultChipStyle.swift in Sources */,
-				5D5E66A62C0390A700FAF565 /* ChipStyleConfiguration.swift in Sources */,
-				5D5E66A72C0390A700FAF565 /* ChipStyleKey.swift in Sources */,
 				5D92623929C76F4F00C9DD2C /* UIColor+ShiftHSB.swift in Sources */,
 				5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */,
-				5D5E66A42C0390A700FAF565 /* ChipViewExtensions.swift in Sources */,
 				5D92622929C71DF900C9DD2C /* FeedItemCardView.swift in Sources */,
 				5DCDE0F229BCF5A200AA3287 /* FeedView.swift in Sources */,
-				5D5E66A82C0390A700FAF565 /* ChipStyle.swift in Sources */,
-				5D5E66972C0385ED00FAF565 /* MyCustomeChipStyle.swift in Sources */,
 				5DCDE0E129BCF3AA00AA3287 /* ContentView.swift in Sources */,
 				5D5E66AC2C039AB200FAF565 /* UserDefaults.swift in Sources */,
-				5D5E66A52C0390A700FAF565 /* EnvironmentValuesExtensions.swift in Sources */,
 				5DCDE0DF29BCF3AA00AA3287 /* DiscobotApp.swift in Sources */,
-				5D5E66AA2C0390A700FAF565 /* Chip.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,6 +224,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -326,6 +255,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9XK6454BT5;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -348,6 +278,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -357,6 +288,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -387,6 +319,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 9XK6454BT5;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -402,6 +335,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -414,9 +348,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1;
+				CURRENT_PROJECT_VERSION = 2.0;
 				DEVELOPMENT_ASSET_PATHS = "\"Discobot/Preview Content\"";
-				DEVELOPMENT_TEAM = 9XK6454BT5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Discobot/Info.plist;
@@ -426,12 +359,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.joeltcollins.Discobot;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -449,9 +382,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1;
+				CURRENT_PROJECT_VERSION = 2.0;
 				DEVELOPMENT_ASSET_PATHS = "\"Discobot/Preview Content\"";
-				DEVELOPMENT_TEAM = 9XK6454BT5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Discobot/Info.plist;
@@ -461,12 +393,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.joeltcollins.Discobot;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

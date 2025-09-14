@@ -19,30 +19,25 @@ struct ContentView: View {
                 playlistsOn: $playlistsOn,
                 stationsOn: $stationsOn
             )
-            .padding(.top, 16.0)
-            .navigationBarHidden(false)
-            .toolbarBackground(.visible)
+//            .padding(.top, 16.0)
             .toolbar {
-                ToolbarItemGroup(placement: .topBarLeading) {
-                    Chip(isOn: $albumsOn) {
-                        Spacer() // Fix for bizarre padding/spacing issue
-                        HStack {
-                            Image(systemName: "square.stack").imageScale(.medium)
-                            Text("Albums")
-                        }
-                    }.chipStyle(MyCustomeChipStyle())
-                    Chip(isOn: $playlistsOn) {
-                        HStack {
-                            Image(systemName: "music.note.list").imageScale(.medium)
-                            Text("Playlists")
-                        }
-                    }.chipStyle(MyCustomeChipStyle())
-                    Chip(isOn: $stationsOn) {
-                        HStack {
-                            Image(systemName: "dot.radiowaves.left.and.right").imageScale(.medium)
-                            Text("Stations")
-                        }
-                    }.chipStyle(MyCustomeChipStyle())
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", systemImage: "xmark", action: {
+                        albumsOn = true
+                        playlistsOn = true
+                        stationsOn = true
+                    })
+                }
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button("Albums", systemImage: "square.stack", action: {
+                        albumsOn = !albumsOn
+                    }).tint(albumsOn ? .accentColor : .none)
+                    Button("Playlists", systemImage: "music.note.list", action: {
+                        playlistsOn = !playlistsOn
+                    }).tint(playlistsOn ? .accentColor : .none)
+                    Button("Stations", systemImage: "dot.radiowaves.left.and.right", action: {
+                        stationsOn = !stationsOn
+                    }).tint(stationsOn ? .accentColor : .none)
                 }
             }
         }

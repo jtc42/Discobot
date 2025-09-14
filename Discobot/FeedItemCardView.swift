@@ -12,7 +12,7 @@ import SkeletonUI
 import SwiftUI
 import SwiftUIPageView
 
-let cardCornerRadius = 20.0
+let cardCornerRadius = 30.0
 
 struct FeedItemCardView: View {
     // MARK: - Environment
@@ -67,14 +67,6 @@ struct FeedItemCardView: View {
 
     var secondaryTextColor: Color {
         return Color(item.artwork?.tertiaryTextColor ?? UIColor.gray.cgColor)
-    }
-
-    var buttonBackgroundColor: Color {
-        return Color(item.artwork?.secondaryTextColor ?? UIColor.systemGray2.cgColor)
-    }
-
-    var buttonLabelColor: Color {
-        return Color(item.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
     }
 
     private var backgroundGradientColors: [Color] {
@@ -140,9 +132,9 @@ struct FeedItemCardView: View {
                     Text("Open")
                 }
                 .frame(maxWidth: .infinity, maxHeight: 18)
+                .padding(8)
             }
-            .padding(15)
-            .background(self.buttonBackgroundColor.cornerRadius(8))
+            .buttonStyle(.glass)
 
             // Play button
             Button(action: handlePlayButtonSelected) {
@@ -151,12 +143,11 @@ struct FeedItemCardView: View {
                     Text(isPlayingThisAlbum ? "Pause" : "Play")
                 }
                 .frame(maxWidth: .infinity, maxHeight: 18)
+                .padding(8)
             }
-            .padding(15)
-            .background(self.buttonBackgroundColor.cornerRadius(8))
+            .buttonStyle(.glass)
             .animation(.easeInOut(duration: 0.1), value: isPlayingThisAlbum)
-
-        }.font(.body.bold()).foregroundColor(self.buttonLabelColor)
+        }
     }
 
     /// The action to perform when the user taps the Play/Pause button.
@@ -218,7 +209,7 @@ struct FeedItemCardView: View {
         GeometryReader { geometry in
             // Height of VStack is determined by it's children, and the height of the children
             // are in turn determined by the available height set by the frame of this view (measured by GeometryReader)
-            LazyVStack(alignment: .leading, spacing: 0.0) {
+            VStack(alignment: .leading, spacing: 0.0) {
                 // Get art size from the parent geometry multiplied by display scale
                 let artSize = geometry.size.width * UIScreen().scale
                 AsyncImage(
@@ -244,7 +235,7 @@ struct FeedItemCardView: View {
                             .background(.black.opacity(0.5))
                             .foregroundColor(.white)
                             .clipShape(Circle())
-                    }.padding(12)
+                    }.glassEffect(.regular.interactive()).padding(12)
                 }
                 // Everything other than album art
                 ZStack {
