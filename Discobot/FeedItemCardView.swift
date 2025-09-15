@@ -12,7 +12,7 @@ import SkeletonUI
 import SwiftUI
 import SwiftUIPageView
 
-let cardCornerRadius = 20.0
+let cardCornerRadius = 30.0
 
 struct FeedItemCardView: View {
     // MARK: - Environment
@@ -29,12 +29,6 @@ struct FeedItemCardView: View {
     /// Recommendation info
     let recommendationTitle: String?
     let recommendationReason: String?
-
-    /// Preview player instance
-    let previewPlayer: AVQueuePlayer
-
-    // Full system music player instance
-    let systemPlayer: SystemMusicPlayer
 
     /// Binding to the parent view's currently active playbackId
     @Binding public var nowPlayingIndex: Int?
@@ -67,14 +61,6 @@ struct FeedItemCardView: View {
 
     var secondaryTextColor: Color {
         return Color(item.artwork?.tertiaryTextColor ?? UIColor.gray.cgColor)
-    }
-
-    var buttonBackgroundColor: Color {
-        return Color(item.artwork?.secondaryTextColor ?? UIColor.systemGray2.cgColor)
-    }
-
-    var buttonLabelColor: Color {
-        return Color(item.artwork?.backgroundColor ?? UIColor.systemGray6.cgColor)
     }
 
     private var backgroundGradientColors: [Color] {
@@ -140,9 +126,9 @@ struct FeedItemCardView: View {
                     Text("Open")
                 }
                 .frame(maxWidth: .infinity, maxHeight: 18)
+                .padding(8)
             }
-            .padding(15)
-            .background(self.buttonBackgroundColor.cornerRadius(8))
+            .buttonStyle(.glass)
 
             // Play button
             Button(action: handlePlayButtonSelected) {
@@ -151,12 +137,11 @@ struct FeedItemCardView: View {
                     Text(isPlayingThisAlbum ? "Pause" : "Play")
                 }
                 .frame(maxWidth: .infinity, maxHeight: 18)
+                .padding(8)
             }
-            .padding(15)
-            .background(self.buttonBackgroundColor.cornerRadius(8))
+            .buttonStyle(.glass)
             .animation(.easeInOut(duration: 0.1), value: isPlayingThisAlbum)
-
-        }.font(.body.bold()).foregroundColor(self.buttonLabelColor)
+        }
     }
 
     /// The action to perform when the user taps the Play/Pause button.
@@ -168,11 +153,11 @@ struct FeedItemCardView: View {
                 // Set this item as the queue and start playing
                 switch item {
                 case .album(let album):
-                    systemPlayer.queue = [album]
+                    SystemMusicPlayer.shared.queue = [album]
                 case .playlist(let playlist):
-                    systemPlayer.queue = [playlist]
+                    SystemMusicPlayer.shared.queue = [playlist]
                 case .station(let station):
-                    systemPlayer.queue = [station]
+                    SystemMusicPlayer.shared.queue = [station]
                 @unknown default:
                     break
                 }
@@ -182,14 +167,14 @@ struct FeedItemCardView: View {
                 // Resume
                 Task {
                     do {
-                        try await systemPlayer.play()
+                        try await SystemMusicPlayer.shared.play()
                     } catch {
                         print("Failed to resume playing with error: \(error).")
                     }
                 }
             }
         } else {
-            systemPlayer.pause()
+            SystemMusicPlayer.shared.pause()
         }
     }
 
@@ -201,7 +186,7 @@ struct FeedItemCardView: View {
         Task {
             do {
                 // Try playing with the system music player
-                try await systemPlayer.play()
+                try await SystemMusicPlayer.shared.play()
                 // Mute previews now something is actually playing
                 previewMuted = true
                 // Update the shared state for which item is playing
@@ -218,47 +203,49 @@ struct FeedItemCardView: View {
         GeometryReader { geometry in
             // Height of VStack is determined by it's children, and the height of the children
             // are in turn determined by the available height set by the frame of this view (measured by GeometryReader)
-            LazyVStack(alignment: .leading, spacing: 0.0) {
+            VStack(alignment: .leading, spacing: 0.0) {
                 // Get art size from the parent geometry multiplied by display scale
                 let artSize = geometry.size.width * UIScreen().scale
-                AsyncImage(
-                    url: item.artwork?.url(width: Int(artSize), height: Int(artSize)),
-                    content: { image in
-                        image.resizable().aspectRatio(contentMode: .fit)
-                    },
-                    placeholder: {
-                        Rectangle()
-                            .fill(cardColour)
-                            .frame(width: geometry.size.width, height: geometry.size.width)
-                    }
-                )
-                .frame(width: geometry.size.width)
-                .background(cardColour)
-                .overlay(alignment: .topTrailing) {
-                    Button(action: {
-                        previewMuted = !previewMuted
-                    }) {
-                        Image(systemName: previewMuted ? "speaker.slash.fill" : "speaker.wave.1.fill")
-                            .frame(width: 20, height: 20)
-                            .padding(8)
-                            .background(.black.opacity(0.5))
-                            .foregroundColor(.white)
-                            .clipShape(Circle())
-                    }.padding(12)
-                }
-                // Everything other than album art
-                ZStack {
-                    // Only show gradient if page is in view
-                    if isNearby && !reduceMotion {
-                        FluidGradient(blobs: self.backgroundGradientColors,
-                                      // Faster animation if this card is active and the preview is unmuted
-                                      speed: currentIndex == pageIndex && !previewMuted ? 0.4 : 0.1,
-                                      blur: 0.85).ignoresSafeArea()
+                // Only render stuff inside the card if it's nearby
+                if isNearby {
+                    AsyncImage(
+                        url: item.artwork?.url(width: Int(artSize), height: Int(artSize)),
+                        content: { image in
+                            image.resizable().aspectRatio(contentMode: .fit)
+                        },
+                        placeholder: {
+                            Rectangle()
+                                .fill(cardColour)
+                                .frame(width: geometry.size.width, height: geometry.size.width)
+                        }
+                    )
+                    .frame(width: geometry.size.width)
+                    .background(cardColour)
+                    .overlay(alignment: .topTrailing) {
+                        Button(action: {
+                            previewMuted = !previewMuted
+                        }) {
+                            Image(systemName: previewMuted ? "speaker.slash.fill" : "speaker.wave.1.fill")
+                                .frame(width: 20, height: 20)
+                                .padding(8)
+                                .background(.black.opacity(0.5))
+                                .foregroundColor(.white)
+                                .clipShape(Circle())
+                        }.glassEffect(.regular.interactive()).padding(12)
                     }
 
-                    VStack(alignment: .leading, spacing: 16.0) {
-                        // Preview progress
-                        if isNearby {
+                    // Everything other than album art
+                    ZStack {
+                        // Only show gradient if page is in view
+                        if !reduceMotion {
+                            FluidGradient(blobs: self.backgroundGradientColors,
+                                          // Faster animation if this card is active and the preview is unmuted
+                                          speed: currentIndex == pageIndex && !previewMuted ? 0.4 : 0.1,
+                                          blur: 0.85).ignoresSafeArea()
+                        }
+
+                        VStack(alignment: .leading, spacing: 16.0) {
+                            // Preview progress
                             HStack {
                                 // Current actual player progress
                                 ProgressView(value: currentIndex == pageIndex ? previewProgress : 0.0, total: 1.0)
@@ -278,16 +265,11 @@ struct FeedItemCardView: View {
                                     .contentShape(Rectangle())
                                     // Skip to next preview on tap
                                     .onTapGesture {
-                                        previewPlayer.advanceToNextItem()
+                                        PreviewPlayer.shared.player.advanceToNextItem()
                                     }
                             }
-                        }
 
-                        // Initial spacer to push item info down
-                        Spacer()
-
-                        // Recommendation info
-                        if isNearby {
+                            // Recommendation info
                             HStack {
                                 VStack(alignment: .leading, spacing: 6.0) {
                                     if let recommendationTitle = recommendationTitle {
@@ -299,8 +281,6 @@ struct FeedItemCardView: View {
                                             .font(.system(.caption2))
                                     }
                                 }.foregroundColor(self.secondaryTextColor)
-
-                                Spacer()
 
                                 VStack {
                                     switch item {
@@ -317,37 +297,32 @@ struct FeedItemCardView: View {
                                 .font(Font.system(.caption).bold())
                                 .foregroundColor(self.secondaryTextColor)
                             }
-                        }
 
-                        // Item info
-                        VStack(alignment: .leading, spacing: 8.0) {
-                            Text(item.title)
-                                .font(Font.system(.headline))
-                            Text(item.subtitle)
-                                .font(.system(.subheadline))
-                        }
-                        .foregroundColor(self.primaryTextColor)
-                        .padding(.top, 8.0)
-
-                        // Push all remaining content to the bottom of the available space
-                        Spacer()
-
-                        // Item card - Full width and horizontally centered
-                        VStack(spacing: 16.0) {
-                            // Buttons seem to make the PageView scroll lag like heck,
-                            // so only render them if the page is in view
-                            if isNearby {
-                                primaryButtons
+                            // Item info
+                            VStack(alignment: .leading, spacing: 8.0) {
+                                Text(item.title)
+                                    .font(Font.system(.headline))
+                                Text(item.subtitle)
+                                    .font(.system(.subheadline))
                             }
-                        }.frame(maxWidth: .infinity, alignment: .center)
+                            .foregroundColor(self.primaryTextColor)
+                            .padding(.top, 8.0)
+
+                            // Push all remaining content to the bottom of the available space
+                            Spacer()
+
+                        }.padding([.horizontal], 20.0)
+                        VStack {
+                            // Push primary buttons to bottom
+                            Spacer()
+                            primaryButtons.frame(maxWidth: .infinity, alignment: .center)
+                        }.padding([.horizontal, .bottom], 20.0)
                     }
-                    // Padding, for a e s t h e t i c
-                    .padding([.horizontal, .bottom], 20.0)
+                    // Lock height as the difference between the artwork height and the full available height
+                    .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
+                    // Apply a gradient background to the bottom half of the card
+                    .background(cardColour)
                 }
-                // Lock height as the difference between the artwork height and the full available height
-                .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
-                // Apply a gradient background to the bottom half of the card
-                .background(cardColour)
             }
             .cornerRadius(cardCornerRadius)
             .overlay( /// Rounded border
