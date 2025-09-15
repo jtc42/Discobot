@@ -212,44 +212,46 @@ struct FeedItemCardView: View {
             VStack(alignment: .leading, spacing: 0.0) {
                 // Get art size from the parent geometry multiplied by display scale
                 let artSize = geometry.size.width * UIScreen().scale
-                AsyncImage(
-                    url: item.artwork?.url(width: Int(artSize), height: Int(artSize)),
-                    content: { image in
-                        image.resizable().aspectRatio(contentMode: .fit)
-                    },
-                    placeholder: {
-                        Rectangle()
-                            .fill(cardColour)
-                            .frame(width: geometry.size.width, height: geometry.size.width)
-                    }
-                )
-                .frame(width: geometry.size.width)
-                .background(cardColour)
-                .overlay(alignment: .topTrailing) {
-                    Button(action: {
-                        previewMuted = !previewMuted
-                    }) {
-                        Image(systemName: previewMuted ? "speaker.slash.fill" : "speaker.wave.1.fill")
-                            .frame(width: 20, height: 20)
-                            .padding(8)
-                            .background(.black.opacity(0.5))
-                            .foregroundColor(.white)
-                            .clipShape(Circle())
-                    }.glassEffect(.regular.interactive()).padding(12)
-                }
-                // Everything other than album art
-                ZStack {
-                    // Only show gradient if page is in view
-                    if isNearby && !reduceMotion {
-                        FluidGradient(blobs: self.backgroundGradientColors,
-                                      // Faster animation if this card is active and the preview is unmuted
-                                      speed: currentIndex == pageIndex && !previewMuted ? 0.4 : 0.1,
-                                      blur: 0.85).ignoresSafeArea()
+                // Only render stuff inside the card if it's nearby
+                if isNearby {
+                    AsyncImage(
+                        url: item.artwork?.url(width: Int(artSize), height: Int(artSize)),
+                        content: { image in
+                            image.resizable().aspectRatio(contentMode: .fit)
+                        },
+                        placeholder: {
+                            Rectangle()
+                                .fill(cardColour)
+                                .frame(width: geometry.size.width, height: geometry.size.width)
+                        }
+                    )
+                    .frame(width: geometry.size.width)
+                    .background(cardColour)
+                    .overlay(alignment: .topTrailing) {
+                        Button(action: {
+                            previewMuted = !previewMuted
+                        }) {
+                            Image(systemName: previewMuted ? "speaker.slash.fill" : "speaker.wave.1.fill")
+                                .frame(width: 20, height: 20)
+                                .padding(8)
+                                .background(.black.opacity(0.5))
+                                .foregroundColor(.white)
+                                .clipShape(Circle())
+                        }.glassEffect(.regular.interactive()).padding(12)
                     }
 
-                    VStack(alignment: .leading, spacing: 16.0) {
-                        // Preview progress
-                        if isNearby {
+                    // Everything other than album art
+                    ZStack {
+                        // Only show gradient if page is in view
+                        if !reduceMotion {
+                            FluidGradient(blobs: self.backgroundGradientColors,
+                                          // Faster animation if this card is active and the preview is unmuted
+                                          speed: currentIndex == pageIndex && !previewMuted ? 0.4 : 0.1,
+                                          blur: 0.85).ignoresSafeArea()
+                        }
+
+                        VStack(alignment: .leading, spacing: 16.0) {
+                            // Preview progress
                             HStack {
                                 // Current actual player progress
                                 ProgressView(value: currentIndex == pageIndex ? previewProgress : 0.0, total: 1.0)
@@ -272,13 +274,8 @@ struct FeedItemCardView: View {
                                         previewPlayer.advanceToNextItem()
                                     }
                             }
-                        }
 
-                        // Initial spacer to push item info down
-                        Spacer()
-
-                        // Recommendation info
-                        if isNearby {
+                            // Recommendation info
                             HStack {
                                 VStack(alignment: .leading, spacing: 6.0) {
                                     if let recommendationTitle = recommendationTitle {
@@ -290,8 +287,6 @@ struct FeedItemCardView: View {
                                             .font(.system(.caption2))
                                     }
                                 }.foregroundColor(self.secondaryTextColor)
-
-                                Spacer()
 
                                 VStack {
                                     switch item {
@@ -308,37 +303,32 @@ struct FeedItemCardView: View {
                                 .font(Font.system(.caption).bold())
                                 .foregroundColor(self.secondaryTextColor)
                             }
-                        }
 
-                        // Item info
-                        VStack(alignment: .leading, spacing: 8.0) {
-                            Text(item.title)
-                                .font(Font.system(.headline))
-                            Text(item.subtitle)
-                                .font(.system(.subheadline))
-                        }
-                        .foregroundColor(self.primaryTextColor)
-                        .padding(.top, 8.0)
-
-                        // Push all remaining content to the bottom of the available space
-                        Spacer()
-
-                        // Item card - Full width and horizontally centered
-                        VStack(spacing: 16.0) {
-                            // Buttons seem to make the PageView scroll lag like heck,
-                            // so only render them if the page is in view
-                            if isNearby {
-                                primaryButtons
+                            // Item info
+                            VStack(alignment: .leading, spacing: 8.0) {
+                                Text(item.title)
+                                    .font(Font.system(.headline))
+                                Text(item.subtitle)
+                                    .font(.system(.subheadline))
                             }
-                        }.frame(maxWidth: .infinity, alignment: .center)
+                            .foregroundColor(self.primaryTextColor)
+                            .padding(.top, 8.0)
+
+                            // Push all remaining content to the bottom of the available space
+                            Spacer()
+
+                        }.padding([.horizontal], 20.0)
+                        VStack {
+                            // Push primary buttons to bottom
+                            Spacer()
+                            primaryButtons.frame(maxWidth: .infinity, alignment: .center)
+                        }.padding([.horizontal, .bottom], 20.0)
                     }
-                    // Padding, for a e s t h e t i c
-                    .padding([.horizontal, .bottom], 20.0)
+                    // Lock height as the difference between the artwork height and the full available height
+                    .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
+                    // Apply a gradient background to the bottom half of the card
+                    .background(cardColour)
                 }
-                // Lock height as the difference between the artwork height and the full available height
-                .frame(width: geometry.size.width, height: geometry.size.height - geometry.size.width, alignment: .topLeading)
-                // Apply a gradient background to the bottom half of the card
-                .background(cardColour)
             }
             .cornerRadius(cardCornerRadius)
             .overlay( /// Rounded border
