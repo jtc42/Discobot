@@ -47,7 +47,6 @@ struct FeedView: View {
     @State var previewMuted: Bool = true
     @State var previewProgress: Float = 0
     @State var previewIndex: Int = 0
-    let previewPlayer: AVQueuePlayer = .init()
 
     /// The MusicKit player to use for full system Apple Music playback.
     private let systemPlayer = SystemMusicPlayer.shared
@@ -155,8 +154,6 @@ struct FeedView: View {
                             pageIndex: index,
                             recommendationTitle: page.recommendationTitle,
                             recommendationReason: page.recommendationReason,
-                            previewPlayer: previewPlayer,
-                            systemPlayer: systemPlayer,
                             nowPlayingIndex: $nowPlayingIndex,
                             currentIndex: $currentIndex,
                             previewMuted: $previewMuted,
@@ -164,7 +161,6 @@ struct FeedView: View {
                             previewIndex: $previewIndex
                         )
                         .onTapGesture {
-                            print("tap")
                             // Tapping before first page change will unmute
                             initiatePreviews()
                             // Tapping will move to the tapped page
@@ -202,18 +198,18 @@ struct FeedView: View {
                 .onChange(of: previewMuted) {
                     Task {
                         if previewMuted {
-                            previewPlayer.pause()
+                            PreviewPlayer.shared.player.pause()
                         } else {
                             if let currentPreviewItem = self.currentPreviewItem {
                                 await startPreviewFor(item: currentPreviewItem)
                             }
                         }
-                        previewPlayer.isMuted = previewMuted
+                        PreviewPlayer.shared.player.isMuted = previewMuted
                     }
                 }
             }.onAppear {
-                self.previewPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1.0, preferredTimescale: 10), queue: .main) { time in
-                    guard let item = self.previewPlayer.currentItem else {
+                PreviewPlayer.shared.player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1.0, preferredTimescale: 10), queue: .main) { time in
+                    guard let item = PreviewPlayer.shared.player.currentItem else {
                         return
                     }
                     self.previewProgress = min(Float(time.seconds / item.duration.seconds), 1.0)
@@ -247,8 +243,7 @@ struct FeedView: View {
     }
 
     private func resetPreviewPlayer() {
-        previewPlayer.pause()
-        previewPlayer.removeAllItems()
+        PreviewPlayer.shared.player.removeAllItems()
     }
 
     private func startPreviewQueue(previewUrlStrings: [String]) {
@@ -256,10 +251,10 @@ struct FeedView: View {
 
         for urlString in previewUrlStrings {
             if let url = URL(string: urlString) {
-                previewPlayer.insert(AVPlayerItem(url: url), after: nil)
+                PreviewPlayer.shared.player.insert(AVPlayerItem(url: url), after: nil)
             }
         }
-        previewPlayer.play()
+        PreviewPlayer.shared.player.play()
     }
 
     private func startPreviewFor(item: MusicPersonalRecommendation.Item) async {
@@ -267,19 +262,23 @@ struct FeedView: View {
             print("previewing item: " + item.title)
             switch item {
             case .album(let album):
+                ApplicationMusicPlayer.shared.stop()
                 let fullAlbum = try await album.with(.tracks)
                 if let tracks = fullAlbum.tracks {
                     let previewUrlStrings = tracks.compactMap {
                         $0.previewAssets?.first?.url?.absoluteString
                     }
+                    previewProgress = 0.0
                     startPreviewQueue(previewUrlStrings: previewUrlStrings)
                 }
             case .playlist(let playlist):
+                ApplicationMusicPlayer.shared.stop()
                 let fullPlaylist = try await playlist.with(.tracks)
                 if let tracks = fullPlaylist.tracks {
                     let previewUrlStrings = tracks.compactMap {
                         $0.previewAssets?.first?.url?.absoluteString
                     }
+                    previewProgress = 0.0
                     startPreviewQueue(previewUrlStrings: previewUrlStrings)
                 }
             case .station(let station):

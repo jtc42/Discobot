@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5D5E66AC2C039AB200FAF565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66AB2C039AB200FAF565 /* UserDefaults.swift */; };
 		5D61B8D62E789ABF00E12A7B /* DiscobotIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 5D61B8D52E789ABF00E12A7B /* DiscobotIcon.icon */; };
+		5D61B8D82E78A46F00E12A7B /* PreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D61B8D72E78A46900E12A7B /* PreviewPlayer.swift */; };
 		5D92622929C71DF900C9DD2C /* FeedItemCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */; };
 		5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */; };
 		5D92622E29C75B7700C9DD2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D92623029C75B7700C9DD2C /* Localizable.strings */; };
@@ -27,6 +28,7 @@
 /* Begin PBXFileReference section */
 		5D5E66AB2C039AB200FAF565 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		5D61B8D52E789ABF00E12A7B /* DiscobotIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; name = DiscobotIcon.icon; path = ../Resources/Source/DiscobotIcon.icon; sourceTree = "<group>"; };
+		5D61B8D72E78A46900E12A7B /* PreviewPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewPlayer.swift; sourceTree = "<group>"; };
 		5D92622729C23A7E00C9DD2C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCardView.swift; sourceTree = "<group>"; };
 		5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
@@ -87,6 +89,7 @@
 		5DCDE0DD29BCF3AA00AA3287 /* Discobot */ = {
 			isa = PBXGroup;
 			children = (
+				5D61B8D72E78A46900E12A7B /* PreviewPlayer.swift */,
 				5D92623729C76F3700C9DD2C /* Extensions */,
 				5D92623029C75B7700C9DD2C /* Localizable.strings */,
 				5DCDE0F329BCFEFB00AA3287 /* Info.plist */,
@@ -205,6 +208,7 @@
 				5D92622929C71DF900C9DD2C /* FeedItemCardView.swift in Sources */,
 				5DCDE0F229BCF5A200AA3287 /* FeedView.swift in Sources */,
 				5DCDE0E129BCF3AA00AA3287 /* ContentView.swift in Sources */,
+				5D61B8D82E78A46F00E12A7B /* PreviewPlayer.swift in Sources */,
 				5D5E66AC2C039AB200FAF565 /* UserDefaults.swift in Sources */,
 				5DCDE0DF29BCF3AA00AA3287 /* DiscobotApp.swift in Sources */,
 			);

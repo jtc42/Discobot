@@ -30,12 +30,6 @@ struct FeedItemCardView: View {
     let recommendationTitle: String?
     let recommendationReason: String?
 
-    /// Preview player instance
-    let previewPlayer: AVQueuePlayer
-
-    // Full system music player instance
-    let systemPlayer: SystemMusicPlayer
-
     /// Binding to the parent view's currently active playbackId
     @Binding public var nowPlayingIndex: Int?
 
@@ -159,11 +153,11 @@ struct FeedItemCardView: View {
                 // Set this item as the queue and start playing
                 switch item {
                 case .album(let album):
-                    systemPlayer.queue = [album]
+                    SystemMusicPlayer.shared.queue = [album]
                 case .playlist(let playlist):
-                    systemPlayer.queue = [playlist]
+                    SystemMusicPlayer.shared.queue = [playlist]
                 case .station(let station):
-                    systemPlayer.queue = [station]
+                    SystemMusicPlayer.shared.queue = [station]
                 @unknown default:
                     break
                 }
@@ -173,14 +167,14 @@ struct FeedItemCardView: View {
                 // Resume
                 Task {
                     do {
-                        try await systemPlayer.play()
+                        try await SystemMusicPlayer.shared.play()
                     } catch {
                         print("Failed to resume playing with error: \(error).")
                     }
                 }
             }
         } else {
-            systemPlayer.pause()
+            SystemMusicPlayer.shared.pause()
         }
     }
 
@@ -192,7 +186,7 @@ struct FeedItemCardView: View {
         Task {
             do {
                 // Try playing with the system music player
-                try await systemPlayer.play()
+                try await SystemMusicPlayer.shared.play()
                 // Mute previews now something is actually playing
                 previewMuted = true
                 // Update the shared state for which item is playing
@@ -271,7 +265,7 @@ struct FeedItemCardView: View {
                                     .contentShape(Rectangle())
                                     // Skip to next preview on tap
                                     .onTapGesture {
-                                        previewPlayer.advanceToNextItem()
+                                        PreviewPlayer.shared.player.advanceToNextItem()
                                     }
                             }
 
