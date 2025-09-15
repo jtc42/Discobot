@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5D5E66AC2C039AB200FAF565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E66AB2C039AB200FAF565 /* UserDefaults.swift */; };
+		5D61B8D62E789ABF00E12A7B /* DiscobotIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 5D61B8D52E789ABF00E12A7B /* DiscobotIcon.icon */; };
 		5D92622929C71DF900C9DD2C /* FeedItemCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */; };
 		5D92622B29C74C9B00C9DD2C /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */; };
 		5D92622E29C75B7700C9DD2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D92623029C75B7700C9DD2C /* Localizable.strings */; };
@@ -25,6 +26,7 @@
 
 /* Begin PBXFileReference section */
 		5D5E66AB2C039AB200FAF565 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
+		5D61B8D52E789ABF00E12A7B /* DiscobotIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; name = DiscobotIcon.icon; path = ../Resources/Source/DiscobotIcon.icon; sourceTree = "<group>"; };
 		5D92622729C23A7E00C9DD2C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCardView.swift; sourceTree = "<group>"; };
 		5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 				5DCDE0E029BCF3AA00AA3287 /* ContentView.swift */,
 				5DCDE0F129BCF5A200AA3287 /* FeedView.swift */,
 				5DCDE0E229BCF3AB00AA3287 /* Assets.xcassets */,
+				5D61B8D52E789ABF00E12A7B /* DiscobotIcon.icon */,
 				5DCDE0E429BCF3AB00AA3287 /* Preview Content */,
 				5D92622829C71DF900C9DD2C /* FeedItemCardView.swift */,
 				5D92622A29C74C9B00C9DD2C /* WelcomeView.swift */,
@@ -186,6 +189,7 @@
 				5DCDE0E629BCF3AB00AA3287 /* Preview Assets.xcassets in Resources */,
 				5D92622E29C75B7700C9DD2C /* Localizable.strings in Resources */,
 				5DCDE0E329BCF3AB00AA3287 /* Assets.xcassets in Resources */,
+				5D61B8D62E789ABF00E12A7B /* DiscobotIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -345,8 +349,9 @@
 		5DCDE0EA29BCF3AB00AA3287 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = DiscobotIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2.0;
 				DEVELOPMENT_ASSET_PATHS = "\"Discobot/Preview Content\"";
@@ -379,8 +384,9 @@
 		5DCDE0EB29BCF3AB00AA3287 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = DiscobotIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2.0;
 				DEVELOPMENT_ASSET_PATHS = "\"Discobot/Preview Content\"";
