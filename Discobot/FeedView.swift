@@ -308,7 +308,7 @@ struct FeedView: View {
             do {
                 isLoading = true
                 var request = MusicPersonalRecommendationsRequest()
-                // TODO: Add loading extra items but running this function again with a new offset
+                // TODO: Add loading extra items by running this function again with a new offset
                 request.limit = 25
                 request.offset = 0
 

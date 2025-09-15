@@ -19,7 +19,6 @@ struct ContentView: View {
                 playlistsOn: $playlistsOn,
                 stationsOn: $stationsOn
             )
-//            .padding(.top, 16.0)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", systemImage: "xmark", action: {
