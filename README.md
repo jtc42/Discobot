@@ -3,9 +3,9 @@
 That Spotify UI everyone hated, but for Apple Music, using SwiftUI.
 
 <p float="left">
-  <img src="https://raw.githubusercontent.com/jtc42/Discobot/main/Resources/IMG_2181.jpeg?token=GHSAT0AAAAAACBNMZVYFZJ4BICUQYDCYNBYZBZSZIA" width="180" />
-  <img src="https://raw.githubusercontent.com/jtc42/Discobot/main/Resources/IMG_2182.jpeg?token=GHSAT0AAAAAACBNMZVZXXCKVHFE4UGAUSRWZBZSZNQ" width="180" /> 
-  <img src="https://raw.githubusercontent.com/jtc42/Discobot/main/Resources/IMG_2183.jpeg?token=GHSAT0AAAAAACBNMZVZH27HAZVTGVY36ENUZBZSZTA" width="180" />
+  <img src="https://raw.githubusercontent.com/jtc42/Discobot/main/Resources/IMG_2181.jpeg?" width="180" />
+  <img src="https://raw.githubusercontent.com/jtc42/Discobot/main/Resources/IMG_2182.jpeg" width="180" /> 
+  <img src="https://raw.githubusercontent.com/jtc42/Discobot/main/Resources/IMG_2183.jpeg" width="180" />
 </p>
 
 ## Why?
