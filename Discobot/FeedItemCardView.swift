@@ -282,6 +282,8 @@ struct FeedItemCardView: View {
                                     }
                                 }.foregroundColor(self.secondaryTextColor)
 
+                                Spacer()
+
                                 VStack {
                                     switch item {
                                     case .album:
